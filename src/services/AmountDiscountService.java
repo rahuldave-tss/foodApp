@@ -1,0 +1,40 @@
+package services;
+
+import models.Cart;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class AmountDiscountService implements IDiscountService {
+    //for customer
+    HashMap<Double,Integer> amount_percentage;
+
+    public AmountDiscountService() {
+        this.amount_percentage = new HashMap<>();
+        initialDiscountsAdder();
+    }
+
+    private void initialDiscountsAdder() {
+        amount_percentage.put(500.0,10);
+    }
+
+    @Override
+    public double applyDiscount(Cart cart) {
+        double discount=0;
+        for(Map.Entry<Double,Integer> e:amount_percentage.entrySet()){
+            if(e.getKey()<=cart.getTotal()){
+                discount=Math.max(discount,(e.getValue()*cart.getTotal())/100);
+            }
+        }
+        return discount;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Amount Discount";
+    }
+
+    public HashMap<Double, Integer> getAmount_percentage() {
+        return amount_percentage;
+    }
+}
