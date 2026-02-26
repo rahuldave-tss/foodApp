@@ -2,6 +2,9 @@ package services;
 
 import models.FoodItem;
 import models.Menu;
+import models.OrderItem;
+
+import java.util.List;
 
 public class MenuService {
     private Menu menu;
@@ -10,19 +13,29 @@ public class MenuService {
         this.menu = new Menu();
     }
 
-    public boolean addFoodItem(String name, double price){
-        FoodItem foodItem=findFoodItemByName(name);
-        if(foodItem==null){
-            menu.getItemList().add(new FoodItem(name, price));
-            return true;
-        }
-        return false;
+    public Menu getMenu() {
+        return menu;
     }
 
-    public boolean removeFoodItem(String name){
+    //returns id
+    public int addFoodItem(String name, double price){
         FoodItem foodItem=findFoodItemByName(name);
+        if(foodItem==null){
+            FoodItem newFoodItem=new FoodItem(name,price);
+            List<FoodItem> itemList=menu.getItemList();
+            itemList.add(newFoodItem);
+            menu.setItemList(itemList);
+            return newFoodItem.getId();
+        }
+        return -1;
+    }
+
+    public boolean removeFoodItem(int id){
+        FoodItem foodItem=findFoodItemById(id);
         if(foodItem!=null){
-            menu.getItemList().remove(foodItem);
+            List<FoodItem> itemList=menu.getItemList();
+            itemList.remove(foodItem);
+            menu.setItemList(itemList);
             return true;
         }
         return false;
@@ -42,7 +55,23 @@ public class MenuService {
         return null;
     }
 
-    public void displayMenu(){
-        //display in tabular format
+    public void displayMenu() {
+        if (menu.getItemList().isEmpty()) {
+            System.out.println("Menu is empty.");
+            return;
+        }
+
+        System.out.println("-------------------------------------------------");
+        System.out.printf("%-10s %-20s %-10s%n", "ID", "NAME", "PRICE");
+        System.out.println("-------------------------------------------------");
+
+        for (FoodItem f : menu.getItemList()) {
+            System.out.printf("%-10d %-20s %-10.2f%n",
+                    f.getId(),
+                    f.getName(),
+                    f.getPrice());
+        }
+
+        System.out.println("-------------------------------------------------");
     }
 }

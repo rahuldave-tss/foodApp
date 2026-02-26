@@ -17,7 +17,7 @@ public class DPRepo {
     }
 
     public List<User> getDeliveryPartners() {
-        return (List<User>) deliveryPartners.keySet();
+        return new ArrayList<>(deliveryPartners.keySet());
     }
 
     public List<Order> getDeliveryPartnerOrders(User deliveryPartner){

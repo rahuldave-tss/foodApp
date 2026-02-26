@@ -16,6 +16,10 @@ public class DiscountRepo {
         return availableDiscounts;
     }
 
+    public void setAvailableDiscounts(List<IDiscount> availableDiscounts) {
+        this.availableDiscounts = availableDiscounts;
+    }
+
     public void addDiscount(IDiscount discount){
         availableDiscounts.add(discount);
     }

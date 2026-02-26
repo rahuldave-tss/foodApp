@@ -1,176 +1,163 @@
 package models;
 
-import repos.DiscountRepo;
+import repos.DPRepo;
 import repos.UserRepo;
-import services.AdminService;
-import services.CustomerService;
-import services.DeliveryPartnerService;
-import services.MenuService;
-
-import java.util.Map;
+import services.*;
 
 import static utils.GlobalConstants.scanner;
 import static utils.Validate.*;
 
 public class FoodOrderApp {
-    private UserRepo userRepo;
-    private AdminService adminService;
-    private CustomerService customerService;
-    private DeliveryPartnerService deliveryPartnerService;
 
+    private UserRepo userRepo;
+    private DPRepo dpRepo;
+    private MenuService menuService;
+    private OrderService orderService;
 
     public FoodOrderApp() {
+
+        // Shared Repositories
         this.userRepo = new UserRepo();
-        this.adminService=new AdminService();
-        this.customerService=new CustomerService();
-        this.deliveryPartnerService=new DeliveryPartnerService();
+        this.dpRepo = new DPRepo();
+
+        // Shared Core Services
+        this.menuService = new MenuService();
+        this.orderService = new OrderService(menuService);
     }
 
     public void start() throws InterruptedException {
-        while(true){
-            System.out.println("===Welcome to Food Order App===");
+
+        while (true) {
+
+            System.out.println("=== Welcome to Food Order App ===");
             System.out.println("1. Register");
             System.out.println("2. Login");
+            System.out.println("3. Exit");
             System.out.print("Enter your choice: ");
-            int choice=validateInt();
 
-            switch (choice){
-                case 1:{
+            int choice = validateInt();
+
+            switch (choice) {
+                case 1:
                     register();
                     break;
-                }
-                case 2:{
+
+                case 2:
                     login();
                     break;
-                }
-                default:{
+
+                case 3:
+                    System.out.println("Thank you for using Food Order App. Goodbye!");
+                    return;
+
+                default:
                     System.out.println("Enter a valid choice !!");
-                }
             }
         }
     }
+
+    // ================= LOGIN =================
 
     private void login() throws InterruptedException {
-        while (true){
-            System.out.println("===Login===");
-            System.out.println("1. Admin");
-            System.out.println("2. Customer");
-            System.out.println("3. Delivery Partner");
-            System.out.println("4. Back");
-            int choice=validateInt();
 
-            switch (choice){
-                case 1:{
-                    loginAdmin();
-                    break;
-                }
-                case 2:{
-                    loginCustomer();
-                    break;
-                }
-                case 3:{
-                    loginDeliveryPartner();
-                    break;
-                }
-                case 4:{
-                    System.out.println("Back to Main Menu...");
-                    return;
-                }
-                default:{
-                    System.out.println("Enter a valid choice !!");
-                }
-            }
-        }
-
-    }
-
-    private void loginDeliveryPartner() throws InterruptedException {
-        User user=getLoginDetails();
-        if(user==null)return;
-        System.out.println("Welcome Delivery Partner ,"+user.getName());
-        deliveryPartnerService.displayFeatures();
-    }
-
-    private void loginCustomer() throws InterruptedException {
-        User user=getLoginDetails();
-        if(user==null)return;
-        System.out.println("Welcome Customer ,"+user.getName());
-        customerService.displayFeatures();
-    }
-
-    private void loginAdmin() {
-        User user=getLoginDetails();
-        if(user==null)return;
-        System.out.println("Welcome Admin ,"+user.getName());
-        adminService.displayFeatures();
-    }
-
-    private User getLoginDetails() {
+        System.out.println("=== Login ===");
         System.out.print("Enter Id: ");
-        int id=validateInt();
-        User user=userRepo.getUserById(id);
-        if(user==null){
+        int id = validateInt();
+
+        User user = userRepo.getUserById(id);
+
+        if (user == null) {
             System.out.println("Invalid ID !!");
-            return null;
+            return;
         }
-        String password=inputPassword();
-        if(!user.getPassword().equals(password)){
+
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+
+        if (!user.getPassword().equals(password)) {
             System.out.println("Wrong Password !!");
-            return null;
+            return;
         }
-        return user;
+
+        System.out.println("Login Successful!");
+
+        redirectUser(user);
     }
+
+    private void redirectUser(User user) throws InterruptedException {
+
+        switch (user.getUserType()) {
+
+            case ADMIN:
+                System.out.println("Welcome Admin, " + user.getName());
+                AdminService adminService =
+                        new AdminService(menuService, dpRepo, userRepo);
+                adminService.displayFeatures();
+                break;
+
+            case CUSTOMER:
+                System.out.println("Welcome Customer, " + user.getName());
+                CustomerService customerService =
+                        new CustomerService(menuService, orderService, dpRepo, user);
+                customerService.displayFeatures();
+                break;
+
+            case DELIVERY_PARTNER:
+                System.out.println("Welcome Delivery Partner, " + user.getName());
+                DeliveryPartnerService deliveryPartnerService =
+                        new DeliveryPartnerService(dpRepo, user);
+                deliveryPartnerService.displayFeatures();
+                break;
+        }
+    }
+
+    // ================= REGISTER =================
 
     private void register() {
-        while(true){
-            System.out.println("===Registration===");
+
+        while (true) {
+
+            System.out.println("=== Registration ===");
             System.out.println("1. Customer");
             System.out.println("2. Back");
-            int choice=validateInt();
 
-            switch (choice){
-                case 1:{
+            int choice = validateInt();
+
+            switch (choice) {
+                case 1:
                     registerCustomer();
                     break;
-                }
-                case 2:{
-                    System.out.println("Back to Main Menu...");
+
+                case 2:
                     return;
-                }
-                default:{
+
+                default:
                     System.out.println("Enter a valid choice !!");
-                }
             }
         }
-
     }
 
-//    private void registerDeliveryPartner() {
-//        String partnerName=inputName();
-//        String partnerPassword=inputPassword();
-//
-//        userRepo.addUser(new User(partnerName,partnerPassword,UserType.DELIVERY_PARTNER));
-//        System.out.println("New Delivery Partner Registered !!");
-//    }
-
     private void registerCustomer() {
-        String customerName=inputName();
-        String customerPassword=inputPassword();
 
-        User customer=new User(customerName,customerPassword,UserType.CUSTOMER);
+        String customerName = inputName();
+        String customerPassword = inputPassword();
+
+        User customer =
+                new User(customerName, customerPassword, UserType.CUSTOMER);
+
         userRepo.addUser(customer);
-        System.out.println("New Customer Registered with ID: "+customer.getId());
+
+        System.out.println("New Customer Registered with ID: "
+                + customer.getId());
     }
 
     private String inputPassword() {
         System.out.print("Enter your password: ");
-        String password= scanner.nextLine();
-        return password;
+        return scanner.nextLine();
     }
 
     private String inputName() {
         System.out.print("Enter your name: ");
-        String name=validateString();
-        return name;
+        return validateString();
     }
 }

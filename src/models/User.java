@@ -12,8 +12,7 @@ public class User {
     public User(){}
     public User(String name, String password, UserType userType) {
         this.name = name;
-        this.id = newId;
-        newId+=11;
+        this.id = newId++;
         this.password = password;
         this.userType = userType;
     }

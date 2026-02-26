@@ -3,7 +3,10 @@ package services;
 import models.*;
 import repos.DiscountRepo;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static utils.Validate.*;
 
@@ -15,11 +18,15 @@ public class OrderService {
     private IDiscountService discountService;
     private IPaymentService paymentService;
 
-    public OrderService() {
-        this.menuService=new MenuService();
+    public OrderService(MenuService menuService) {
+        this.menuService=menuService;
         this.discountService=new AmountDiscountService();
         this.discountRepo=new DiscountRepo();
         this.order=new Order();
+    }
+
+    public Order getOrder() {
+        return order;
     }
 
     public void addItemToCart(){
@@ -43,31 +50,38 @@ public class OrderService {
         }
     }
 
-    public void removeItemFromCart(){
-        if(order.getCart().getShoppingCart().isEmpty()){
+    public void removeItemFromCart() {
+
+        Map<FoodItem, OrderItem> currentCart = order.getCart().getShoppingCart();
+
+        if (currentCart.isEmpty()) {
             System.out.println("Cart is Empty !!");
             return;
         }
-        System.out.print("Enter the FoodItem ID to remove: ");
-        int id=validateInt();
-        FoodItem foodItem=menuService.findFoodItemById(id);
-        if(foodItem==null){
-            System.out.println("Invalid ID...");
-            return;
-        }
 
-        List<OrderItem> currentCart=order.getCart().getShoppingCart();
-        for(OrderItem oi:currentCart){
-            if(oi.getFoodItem().getId()==id){
-                currentCart.remove(oi);
+        System.out.print("Enter the FoodItem ID to remove: ");
+        int id = validateInt();
+
+        FoodItem itemToRemove = null;
+
+        for (FoodItem food : currentCart.keySet()) {
+            if (food.getId() == id) {
+                itemToRemove = food;
                 break;
             }
         }
-        order.getCart().setShoppingCart(currentCart);
 
-        System.out.print("Do you want to remove more items?(y/n) :");
-        String s=validateString();
-        if(s.equalsIgnoreCase("y")){
+        if (itemToRemove != null) {
+            currentCart.remove(itemToRemove);
+            System.out.println("Item removed successfully.");
+        } else {
+            System.out.println("Item not found in cart.");
+        }
+
+        System.out.print("Do you want to remove more items? (y/n): ");
+        String s = validateString();
+
+        if (s.equalsIgnoreCase("y")) {
             removeItemFromCart();
         }
     }
@@ -76,28 +90,43 @@ public class OrderService {
         order.getCart().displayCart();
     }
 
-    public void confirmOrder(){
-        //confirm order payment and assign delivery partner
-        System.out.println("Enter Payment Mode: ");
-        System.out.println("1. Cash");
-        System.out.println("2. Upi");
-        System.out.print("Enter your choice: ");
-        int choice=validateInt();
-        switch (choice){
-            case 1:{
-                paymentService=PaymentFactory.getPaymentService(PaymentType.CASH);
-                paymentService.doPayment(calculateTotal());
-                break;
-            }
-            case 2:{
-                paymentService=PaymentFactory.getPaymentService(PaymentType.UPI);
-                paymentService.doPayment(calculateTotal());
-                break;
-            }
-            default:{
-                System.out.println("Not a valid option....");
-            }
+    public void confirmOrder() {
+
+        if(order.getCart().getShoppingCart().isEmpty()){
+            System.out.println("Cart is empty. Cannot place order.");
+            return;
         }
+
+        System.out.println("\n------ ORDER SUMMARY ------");
+        order.getCart().displayCart();
+
+        double total = calculateTotal();
+        double discount = getDiscountAmount();
+
+        System.out.printf("Discount Applied: %.2f%n", discount);
+        System.out.printf("Final Payable Amount: %.2f%n", total);
+
+        System.out.println("\nEnter Payment Mode:");
+        System.out.println("1. Cash");
+        System.out.println("2. UPI");
+        System.out.print("Enter your choice: ");
+
+        int choice = validateInt();
+
+        switch (choice){
+            case 1:
+                paymentService = PaymentFactory.getPaymentService(PaymentType.CASH);
+                break;
+            case 2:
+                paymentService = PaymentFactory.getPaymentService(PaymentType.UPI);
+                break;
+            default:
+                System.out.println("Invalid option.");
+                return;
+        }
+
+        paymentService.doPayment(total);
+        order.setFinalAmount(total);
     }
 
     public double cartTotal(){

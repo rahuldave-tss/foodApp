@@ -1,45 +1,78 @@
 package models;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Cart {
-    private List<OrderItem> shoppingCart;
+
+    //fooditem(id)->orderitem for no duplicates and easy access
+    private Map<FoodItem, OrderItem> shoppingCart;
 
     public Cart() {
-        shoppingCart=new ArrayList<>();
+        shoppingCart = new HashMap<>();
     }
 
-    public List<OrderItem> getShoppingCart() {
+    public Map<FoodItem, OrderItem> getShoppingCart() {
         return shoppingCart;
     }
 
-    public void setShoppingCart(List<OrderItem> shoppingCart) {
-        this.shoppingCart = shoppingCart;
-    }
+    public void addItem(OrderItem item) {
 
-    public void addItems(List<OrderItem> itemList){
-        shoppingCart.addAll(itemList);
-    }
+        FoodItem food = item.getFoodItem();
 
-    public void addItem(OrderItem item){
-        shoppingCart.add(item);
-    }
-
-    public void removeItem(OrderItem item){
-        shoppingCart.remove(item);
-    }
-
-    public double getTotal(){
-        double cartTotal=0;
-        for(OrderItem i:shoppingCart){
-            cartTotal+=i.getQuantity()*(i.getFoodItem().getPrice());
+        if (shoppingCart.containsKey(food)) {
+            OrderItem existingItem = shoppingCart.get(food);
+            existingItem.setQuantity(
+                    existingItem.getQuantity() + item.getQuantity()
+            );
+        } else {
+            shoppingCart.put(food, item);
         }
-        return cartTotal;
     }
 
-    public void displayCart(){
-        //display in tabular format
+    public double getTotal() {
+        double total = 0;
+
+        for (OrderItem item : shoppingCart.values()) {
+            total += item.getQuantity() * item.getFoodItem().getPrice();
+        }
+
+        return total;
     }
 
+    public void displayCart() {
+
+        if (shoppingCart.isEmpty()) {
+            System.out.println("Your cart is empty.");
+            return;
+        }
+
+        System.out.println("---------------------------------------------------------------------");
+        System.out.printf("%-8s %-20s %-10s %-10s %-12s%n",
+                "ID", "NAME", "PRICE", "QTY", "SUBTOTAL");
+        System.out.println("---------------------------------------------------------------------");
+
+        for (OrderItem item : shoppingCart.values()) {
+
+            int id = item.getFoodItem().getId();
+            String name = item.getFoodItem().getName();
+            double price = item.getFoodItem().getPrice();
+            int quantity = item.getQuantity();
+            double subtotal = price * quantity;
+
+            System.out.printf("%-8d %-20s %-10.2f %-10d %-12.2f%n",
+                    id, name, price, quantity, subtotal);
+        }
+
+        System.out.println("---------------------------------------------------------------------");
+        System.out.printf("%-50s %-12.2f%n", "TOTAL AMOUNT:", getTotal());
+        System.out.println("---------------------------------------------------------------------");
+    }
+
+    @Override
+    public String toString() {
+        return "Cart{" +
+                "shoppingCart=" + shoppingCart +
+                '}';
+    }
 }

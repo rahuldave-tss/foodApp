@@ -4,13 +4,14 @@ import models.Cart;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class AmountDiscountService implements IDiscountService {
     //for customer
-    HashMap<Double,Integer> amount_percentage;
+    TreeMap<Double,Integer> amount_percentage;
 
     public AmountDiscountService() {
-        this.amount_percentage = new HashMap<>();
+        this.amount_percentage = new TreeMap<>();
         initialDiscountsAdder();
     }
 
@@ -34,7 +35,7 @@ public class AmountDiscountService implements IDiscountService {
         return "Amount Discount";
     }
 
-    public HashMap<Double, Integer> getAmount_percentage() {
+    public TreeMap<Double, Integer> getAmount_percentage() {
         return amount_percentage;
     }
 }

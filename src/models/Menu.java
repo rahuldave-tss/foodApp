@@ -13,4 +13,8 @@ public class Menu {
     public List<FoodItem> getItemList() {
         return itemList;
     }
+
+    public void setItemList(List<FoodItem> itemList) {
+        this.itemList = itemList;
+    }
 }

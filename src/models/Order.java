@@ -1,51 +1,59 @@
 package models;
 
-import java.time.LocalDate;
-import java.util.Random;
-
 public class Order {
-    private int id;
-    private LocalDate orderDate;
-    private OrderStatus orderStatus;
+
+    private static int counter = 101;
+
+    private int orderId;
     private Cart cart;
+    private double finalAmount;
+    private User deliveryPartner;
+    private OrderStatus status;
 
     public Order() {
-        this.id = randomIdGenerator();
-        this.orderDate = LocalDate.now();
-        this.orderStatus = OrderStatus.PREPARING;
-        this.cart=new Cart();
+        this.orderId = counter++;
+        this.cart = new Cart();
+        this.status = OrderStatus.PREPARING;
     }
 
-    private int randomIdGenerator() {
-        Random random=new Random();
-        //check if random is not repeated
-        return random.nextInt(1,10000);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public LocalDate getOrderDate() {
-        return orderDate;
-    }
-
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
+    public int getOrderId() {
+        return orderId;
     }
 
     public Cart getCart() {
         return cart;
     }
 
-    //tabular format
+    public double getFinalAmount() {
+        return finalAmount;
+    }
+
+    public void setFinalAmount(double finalAmount) {
+        this.finalAmount = finalAmount;
+    }
+
+    public User getDeliveryPartner() {
+        return deliveryPartner;
+    }
+
+    public void setDeliveryPartner(User deliveryPartner) {
+        this.deliveryPartner = deliveryPartner;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
-                "id=" + id +
-                ", orderDate=" + orderDate +
-                ", orderStatus=" + orderStatus +
+                "orderId=" + orderId +
                 ", cart=" + cart +
+                ", finalAmount=" + finalAmount +
                 '}';
     }
 }

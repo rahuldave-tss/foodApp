@@ -11,14 +11,23 @@ import java.util.Map;
 public class UserRepo {
     //id -> user
     Map<Integer,User> userList;
+    private DPRepo dpRepo;
 
     public UserRepo() {
         this.userList = new HashMap<>();
+        dpRepo=new DPRepo();
         init();
     }
 
     public void addUser(User user){
         userList.put(user.getId(),user);
+    }
+    public void removeUser(int id){
+        userList.remove(id);
+    }
+
+    public void setUserList(Map<Integer, User> userList) {
+        this.userList = userList;
     }
 
     public Map<Integer, User> getUserList() {
