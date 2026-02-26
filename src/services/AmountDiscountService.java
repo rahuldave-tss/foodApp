@@ -21,6 +21,7 @@ public class AmountDiscountService implements IDiscountService {
 
     @Override
     public double applyDiscount(Cart cart) {
+        //can apply binary search after taking keySet from TreeMap instead of using linear search
         double discount=0;
         for(Map.Entry<Double,Integer> e:amount_percentage.entrySet()){
             if(e.getKey()<=cart.getTotal()){

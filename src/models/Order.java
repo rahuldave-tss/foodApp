@@ -1,19 +1,32 @@
 package models;
 
-public class Order {
+import notifications.Observer;
+import notifications.Subject;
+import utils.RandomNumberGenerator;
 
-    private static int counter = 101;
+import java.util.List;
 
+public class Order implements Subject {
     private int orderId;
     private Cart cart;
     private double finalAmount;
     private User deliveryPartner;
     private OrderStatus status;
+    private User customer;
+    private List<Observer> observerList;
 
     public Order() {
-        this.orderId = counter++;
+        this.orderId = RandomNumberGenerator.generateRandomNumber();;
         this.cart = new Cart();
         this.status = OrderStatus.PREPARING;
+    }
+
+    public User getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(User customer) {
+        this.customer = customer;
     }
 
     public int getOrderId() {
@@ -50,10 +63,49 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
-                "orderId=" + orderId +
-                ", cart=" + cart +
-                ", finalAmount=" + finalAmount +
-                '}';
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Order ID       : ").append(orderId).append("\n");
+        sb.append("Customer       : ").append(customer != null ? customer.getName() : "Not Assigned").append("\n");
+        sb.append("Delivery Partner: ").append(deliveryPartner != null ? deliveryPartner.getName() : "Not Assigned").append("\n");
+        sb.append("Status         : ").append(status).append("\n");
+        sb.append("Final Amount   : ").append(finalAmount).append("\n");
+        sb.append("Cart Items     : \n");
+
+        if(cart != null && cart.getShoppingCart() != null && !cart.getShoppingCart().isEmpty()) {
+            int index = 1;
+            for(var item : cart.getShoppingCart().values()) {
+                sb.append("  ")
+                        .append(index++)
+                        .append(". ")
+                        .append(item.getFoodItem().getName())
+                        .append(" x")
+                        .append(item.getQuantity())
+                        .append(" = ")
+                        .append(item.getFoodItem().getPrice() * item.getQuantity())
+                        .append("\n");
+            }
+        } else {
+            sb.append("  Cart is empty\n");
+        }
+
+        return sb.toString();
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        observerList.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observerList.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(String message) {
+        for(Observer observer : observerList) {
+            observer.update(message);
+        }
     }
 }

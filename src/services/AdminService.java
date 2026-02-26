@@ -1,5 +1,7 @@
 package services;
 
+import exceptions.EmptyMenuException;
+import exceptions.ItemAlreadyPresentException;
 import models.*;
 import repos.DPRepo;
 import repos.DiscountRepo;
@@ -101,11 +103,21 @@ public class AdminService {
         int choice=validateInt();
         switch (choice){
             case 1:{
-                addItem();
+                try{
+                    addItem();
+                }
+                catch(ItemAlreadyPresentException e){
+                    System.out.println(e.getMessage());
+                }
                 break;
             }
             case 2:{
-                removeItem();
+                try{
+                    removeItem();
+                }
+                catch(EmptyMenuException e){
+                    System.out.println(e.getMessage());
+                }
                 break;
             }
             default:{
@@ -120,7 +132,8 @@ public class AdminService {
             System.out.println("Options available: ");
             System.out.println("1. Create Discount");
             System.out.println("2. Remove Discount");
-            System.out.println("3. Back");
+            System.out.println("3. Update Existing Discount");
+            System.out.println("4. Back");
             System.out.print("Enter your choice: ");
             int choice=validateInt();
             switch (choice){
@@ -133,6 +146,10 @@ public class AdminService {
                     break;
                 }
                 case 3:{
+                    updateDiscountPercentage();
+                    break;
+                }
+                case 4:{
                     System.out.println("Back to Admin Panel...");
                     return;
                 }
@@ -142,6 +159,30 @@ public class AdminService {
             }
         }
 
+    }
+
+    private void updateDiscountPercentage() {
+        System.out.println("Enter the Discount Id to update that discount percentage: ");
+        int id=validateInt();
+        if(discountRepo.getAvailableDiscounts().isEmpty()){
+            System.out.println("No discounts available !!");
+            return;
+        }
+        System.out.println("Enter new discount percentage: ");
+        int newPercentage=validateInt();
+        if(newPercentage<0 || newPercentage>100){
+            System.out.println("Enter a valid discount percentage !!");
+            return;
+        }
+        List<IDiscount> discounts=discountRepo.getAvailableDiscounts();
+        for(IDiscount discount: discounts){
+            if(discount.getId()==id){
+                discount.setDiscountPercentage(newPercentage);
+                System.out.println("Discount Percentage Updated !!");
+                return;
+            }
+        }
+        System.out.println("No such discount found !!");
     }
 
     public void createDiscount(){
@@ -193,6 +234,9 @@ public class AdminService {
     public void addItem(){
         System.out.print("Enter Item Name to add: ");
         String itemName=scanner.nextLine();
+        if(itemAlreadyPresent(itemName)){
+            throw new ItemAlreadyPresentException("Food Item already present in Menu !!");
+        }
         System.out.print("Enter it's Price: ");
         double price=validateDouble();
         int foodItemId=menuService.addFoodItem(itemName,price);
@@ -203,10 +247,16 @@ public class AdminService {
         System.out.println("Food Item already present in Menu !!");
     }
 
+    private boolean itemAlreadyPresent(String itemName) {
+        for(FoodItem f:menuService.getMenu().getItemList()){
+            if(f.getName().equalsIgnoreCase(itemName))return true;
+        }
+        return false;
+    }
+
     public void removeItem(){
         if(menuService.getMenu().getItemList().isEmpty()){
-            System.out.println("No food items available in menu !!");
-            return;
+            throw new EmptyMenuException("No food items available in menu !!");
         }
         System.out.print("Enter Item ID to remove: ");
         int itemId= validateInt();
@@ -226,7 +276,6 @@ public class AdminService {
         userRepo.addUser(partner);
         dpRepo.addPartner(partner);
         System.out.println("Delivery Partner Added with ID: "+partner.getId());
-        System.out.println("DELIVERY PARTNERS: "+userRepo);
     }
 
     public void removePartner(){
@@ -248,7 +297,6 @@ public class AdminService {
 
 
     private IDiscount removeAmountDiscount() {
-
         System.out.print("Enter the Discount Id to remove that discount: ");
         int discountId=validateInt();
         if(discountRepo.getAvailableDiscounts().isEmpty()){

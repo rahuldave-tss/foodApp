@@ -35,8 +35,9 @@ public class UserRepo {
     }
 
     public void init(){
+        //Hardcoding an admin user for testing
         User admin=new User("Rahul","admin123", UserType.ADMIN);
-        userList.put(admin.getId(), admin);
+        userList.put(1, admin);
     }
 
     public User getUserById(int id){

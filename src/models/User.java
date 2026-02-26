@@ -1,18 +1,16 @@
 package models;
 
-public class User {
+import utils.RandomNumberGenerator;
 
-    //builder
-    private static int newId=1;
-    private String name;
+public class User {
     private int id;
+    private String name;
     private String password;
     private UserType userType;
 
-    public User(){}
     public User(String name, String password, UserType userType) {
+        this.id = RandomNumberGenerator.generateRandomNumber();
         this.name = name;
-        this.id = newId++;
         this.password = password;
         this.userType = userType;
     }
