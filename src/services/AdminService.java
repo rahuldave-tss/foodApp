@@ -7,9 +7,7 @@ import repos.DPRepo;
 import repos.DiscountRepo;
 import repos.UserRepo;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static utils.GlobalConstants.scanner;
 import static utils.Validate.validateDouble;
@@ -21,155 +19,275 @@ public class AdminService {
     private DPRepo dpRepo;
     private UserRepo userRepo;
 
-    public AdminService(MenuService menuService,DPRepo dpRepo,UserRepo userRepo) {
+    public AdminService(MenuService menuService,DPRepo dpRepo,UserRepo userRepo,DiscountRepo discountRepo) {
         this.menuService = menuService;
-        this.discountRepo = new DiscountRepo();
         this.dpRepo = dpRepo;
         this.userRepo = userRepo;
+        this.discountRepo=discountRepo;
     }
 
-    public void displayFeatures(){
-        while(true) {
-            System.out.println("===ADMIN PANEL===");
-            System.out.println("Options available: ");
-            System.out.println("1. Manage Discounts");
-            System.out.println("2. Manage Items in Menu");
-            System.out.println("3. Manage Delivery Partners");
-            System.out.println("4. Back");
-            System.out.print("Enter you choice: ");
-            int choice=validateInt();
+    public void displayFeatures() {
 
-            switch (choice){
-                case 1:{
+        while (true) {
+
+            System.out.println("\n================================================");
+            System.out.println("                   ADMIN PANEL                  ");
+            System.out.println("================================================");
+            System.out.println(" Please select an option:");
+            System.out.println("------------------------------------------------");
+            System.out.println("  1. Manage Discounts");
+            System.out.println("  2. Manage Menu Items");
+            System.out.println("  3. Manage Delivery Partners");
+            System.out.println("  4. Back to Main Menu");
+            System.out.println("------------------------------------------------");
+            System.out.print(" Enter your choice (1-4): ");
+
+            int choice = validateInt();
+
+            System.out.println();
+
+            switch (choice) {
+
+                case 1:
                     manageDiscounts();
                     break;
-                }
-                case 2:{
+
+                case 2:
                     manageItems();
                     break;
-                }
-                case 3:{
+
+                case 3:
                     manageDeliveryPartners();
                     break;
-                }
-                case 4:{
-                    System.out.println("Back to Main Menu...");
+
+                case 4:
+                    System.out.println(" Returning to Main Menu...");
+                    System.out.println("================================================\n");
                     return;
-                }
-                default:{
-                    System.out.println("Enter a valid choice !!!");
-                }
+
+                default:
+                    System.out.println(" Invalid choice! Please enter a number between 1 and 4.");
             }
         }
     }
 
     private void manageDeliveryPartners() {
-        while(true){
+
+        while (true) {
+
+            System.out.println("\n================================================");
+            System.out.println("             MANAGE DELIVERY PARTNERS           ");
+            System.out.println("================================================");
+            System.out.println(" Please choose an option:");
+            System.out.println("------------------------------------------------");
+            System.out.println("  1. Add Partner");
+            System.out.println("  2. Remove Partner");
+            System.out.println("  3. View All Partners");
+            System.out.println("  4. Back to Admin Panel");
+            System.out.println("------------------------------------------------");
+            System.out.print(" Enter your choice (1-4): ");
+
+            int choice = validateInt();
             System.out.println();
-            System.out.println("Options available: ");
-            System.out.println("1. Add Partner");
-            System.out.println("2. Remove Partner");
-            System.out.println("3. Back");
-            System.out.print("Enter your choice: ");
-            int choice=validateInt();
-            switch (choice){
-                case 1:{
+
+            switch (choice) {
+
+                case 1:
                     addPartner();
                     break;
-                }
-                case 2:{
+
+                case 2:
                     removePartner();
                     break;
-                }
-                case 3:{
-                    System.out.println("Back to Admin Panel...");
+
+                case 3:
+                    viewAllPartners();
+                    break;
+
+                case 4:
+                    System.out.println(" Returning to Admin Panel...");
+                    System.out.println("================================================\n");
                     return;
-                }
-                default:{
-                    System.out.println("Enter a valid choice !!");
-                }
+
+                default:
+                    System.out.println(" Invalid choice! Please enter a number between 1 and 4.");
             }
         }
     }
 
+    private void viewAllPartners() {
+        List<User> deliveryPartners = dpRepo.getDeliveryPartners();
+        if (deliveryPartners == null || deliveryPartners.isEmpty()) {
+            System.out.println("No partners registered.");
+            return;
+        }
+
+        System.out.println("\n===================================");
+        System.out.println("        DELIVERY PARTNERS          ");
+        System.out.println("===================================");
+
+        System.out.printf("%-10s %-25s%n", "ID", "Name");
+        System.out.println("-----------------------------------");
+
+        for (User partner : deliveryPartners) {
+            System.out.printf(
+                    "%-10s %-25s%n",
+                    partner.getId(),
+                    partner.getName()
+            );
+        }
+
+        System.out.println("===================================\n");
+    }
+
     private void manageItems() {
-        System.out.println();
-        menuService.displayMenu();
-        System.out.println();
-        System.out.println("Options available: ");
-        System.out.println("1. Create Food Item");
-        System.out.println("2. Remove Food Item");
-        System.out.print("Enter your choice: ");
-        int choice=validateInt();
-        switch (choice){
-            case 1:{
-                try{
-                    addItem();
-                }
-                catch(ItemAlreadyPresentException e){
-                    System.out.println(e.getMessage());
-                }
-                break;
+
+        while (true) {
+
+            System.out.println("\n================================================");
+            System.out.println("                 MANAGE MENU ITEMS              ");
+            System.out.println("================================================");
+
+            try {
+                menuService.displayMenu();
+            } catch (EmptyMenuException e) {
+                System.out.println(" Menu is currently empty.");
             }
-            case 2:{
-                try{
-                    removeItem();
-                }
-                catch(EmptyMenuException e){
-                    System.out.println(e.getMessage());
-                }
-                break;
-            }
-            default:{
-                System.out.println("Enter a valid choice !!");
+
+            System.out.println("------------------------------------------------");
+            System.out.println(" Please choose an option:");
+            System.out.println("------------------------------------------------");
+            System.out.println("  1. Create Food Item");
+            System.out.println("  2. Remove Food Item");
+            System.out.println("  3. View Menu");
+            System.out.println("  4. Back to Admin Panel");
+            System.out.println("------------------------------------------------");
+            System.out.print(" Enter your choice (1-4): ");
+
+            int choice = validateInt();
+            System.out.println();
+
+            switch (choice) {
+
+                case 1:
+                    try {
+                        addItem();
+                    } catch (ItemAlreadyPresentException e) {
+                        System.out.println(" Error: " + e.getMessage());
+                    }
+                    break;
+
+                case 2:
+                    try {
+                        removeItem();
+                    } catch (EmptyMenuException e) {
+                        System.out.println(" Error: " + e.getMessage());
+                    }
+                    break;
+
+                case 3:
+                    try {
+                        menuService.displayMenu();
+                    } catch (EmptyMenuException e) {
+                        System.out.println(" Menu is currently empty.");
+                    }
+                    break;
+
+                case 4:
+                    System.out.println(" Returning to Admin Panel...");
+                    System.out.println("================================================\n");
+                    return;
+
+                default:
+                    System.out.println(" Invalid choice! Please enter a number between 1 and 4.");
             }
         }
     }
 
     private void manageDiscounts() {
-        while(true){
+
+        while (true) {
+            System.out.println("\n================================================");
+            System.out.println("                 MANAGE DISCOUNTS               ");
+            System.out.println("================================================");
+            System.out.println(" Please choose an option:");
+            System.out.println("------------------------------------------------");
+            System.out.println("  1. Create Discount");
+            System.out.println("  2. Remove Discount");
+            System.out.println("  3. Update Discount Percentage");
+            System.out.println("  4. View All Available Discounts");
+            System.out.println("  5. Back to Admin Panel");
+            System.out.println("------------------------------------------------");
+            System.out.print(" Enter your choice (1-5): ");
+
+            int choice = validateInt();
             System.out.println();
-            System.out.println("Options available: ");
-            System.out.println("1. Create Discount");
-            System.out.println("2. Remove Discount");
-            System.out.println("3. Update Existing Discount");
-            System.out.println("4. Back");
-            System.out.print("Enter your choice: ");
-            int choice=validateInt();
-            switch (choice){
-                case 1:{
+
+            switch (choice) {
+
+                case 1:
                     createDiscount();
                     break;
-                }
-                case 2:{
+
+                case 2:
                     removeDiscount();
                     break;
-                }
-                case 3:{
+
+                case 3:
                     updateDiscountPercentage();
                     break;
-                }
-                case 4:{
-                    System.out.println("Back to Admin Panel...");
+
+                case 4:
+                    viewAllDiscounts();
+                    break;
+
+                case 5:
+                    System.out.println(" Returning to Admin Panel...");
+                    System.out.println("================================================\n");
                     return;
-                }
-                default:{
-                    System.out.println("Enter a valid choice !!");
-                }
+
+                default:
+                    System.out.println(" Invalid choice! Please enter a number between 1 and 5.");
             }
         }
+    }
 
+    private void viewAllDiscounts() {
+        List<IDiscount> discounts = discountRepo.getAvailableDiscounts();
+        if (discounts == null || discounts.isEmpty()) {
+            System.out.println("No discounts available.\n");
+            return;
+        }
+
+        System.out.println("\n==============================================");
+        System.out.println("               AVAILABLE DISCOUNTS            ");
+        System.out.println("==============================================");
+
+        System.out.printf("%-10s %-15s %-15s%n", "ID", "Amount", "Percentage");
+        System.out.println("----------------------------------------------");
+
+        for (IDiscount discount : discounts) {
+            System.out.printf(
+                    "%-10s %-15.2f %-14.2f%%%n",
+                    discount.getId(),
+                    discount.getAmount(),
+                    discount.getDiscountPercentage()
+            );
+        }
+
+        System.out.println("==============================================\n");
     }
 
     private void updateDiscountPercentage() {
-        System.out.println("Enter the Discount Id to update that discount percentage: ");
+        viewAllDiscounts();
+        System.out.print("Enter the Discount Id to update that discount percentage: ");
         int id=validateInt();
         if(discountRepo.getAvailableDiscounts().isEmpty()){
             System.out.println("No discounts available !!");
             return;
         }
         System.out.println("Enter new discount percentage: ");
-        int newPercentage=validateInt();
+        double newPercentage=validateDouble();
         if(newPercentage<0 || newPercentage>100){
             System.out.println("Enter a valid discount percentage !!");
             return;
@@ -192,7 +310,12 @@ public class AdminService {
         IDiscount newDiscount=null;
         switch (choice){
             case 1:{
-                newDiscount=createAmountDiscount();
+                try{
+                    newDiscount=createAmountDiscount();
+                }
+                catch(IllegalArgumentException e){
+                    System.out.println(e.getMessage());
+                }
                 break;
             }
             default:{
@@ -209,6 +332,7 @@ public class AdminService {
             System.out.println("No discounts available !!");
             return;
         }
+        viewAllDiscounts();
         System.out.println("Which type of discount you want to remove?: ");
         System.out.println("1. Amount Discount");
         int choice=validateInt();
@@ -220,6 +344,7 @@ public class AdminService {
             }
             default:{
                 System.out.println("Enter a valid option !!");
+                return;
             }
         }
         if(newDiscount==null){
@@ -268,9 +393,9 @@ public class AdminService {
     }
 
     public void addPartner(){
-        System.out.println("Enter Name of partner: ");
+        System.out.print("Enter Name of partner: ");
         String partnerName= scanner.nextLine();
-        System.out.println("Enter password for partner: ");
+        System.out.print("Enter password for partner: ");
         String partnerPassword= scanner.nextLine();
         User partner=new User(partnerName,partnerPassword,UserType.DELIVERY_PARTNER);
         userRepo.addUser(partner);
@@ -283,7 +408,7 @@ public class AdminService {
             System.out.println("No delivery partners available !!");
             return;
         }
-        System.out.println("Enter the ID of the partner: ");
+        System.out.print("Enter the ID of the partner: ");
         int partnerId=validateInt();
         User partner= userRepo.getUserById(partnerId);
         if(partner==null){
@@ -316,6 +441,9 @@ public class AdminService {
         double amount=validateDouble();
         System.out.print("Enter Discount Percentage: ");
         int discountPercentage=validateInt();
+        if(discountPercentage<0 || discountPercentage>100){
+            throw new IllegalArgumentException("Enter valid discount percentage");
+        }
         return new AmountDiscount(amount,discountPercentage);
     }
 

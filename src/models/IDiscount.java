@@ -2,5 +2,7 @@ package models;
 
 public interface IDiscount {
     int getId();
-    void setDiscountPercentage(int discountPercentage);
+    double getAmount();
+    double getDiscountPercentage();
+    void setDiscountPercentage(double discountPercentage);
 }

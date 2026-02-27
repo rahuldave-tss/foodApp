@@ -8,14 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static utils.GlobalConstants.adminPassword;
+import static utils.GlobalConstants.adminUsername;
+
 public class UserRepo {
     //id -> user
     Map<Integer,User> userList;
-    private DPRepo dpRepo;
 
     public UserRepo() {
         this.userList = new HashMap<>();
-        dpRepo=new DPRepo();
         init();
     }
 
@@ -36,7 +37,7 @@ public class UserRepo {
 
     public void init(){
         //Hardcoding an admin user for testing
-        User admin=new User("Rahul","admin123", UserType.ADMIN);
+        User admin=new User(adminUsername,adminPassword, UserType.ADMIN);
         userList.put(1, admin);
     }
 

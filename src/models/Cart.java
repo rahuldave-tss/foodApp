@@ -46,7 +46,7 @@ public class Cart {
     public void displayCart() {
 
         if (shoppingCart.isEmpty()) {
-            throw new EmptyCartException("Cart is Empty !!");
+            throw new EmptyCartException();
         }
 
         System.out.println("---------------------------------------------------------------------");

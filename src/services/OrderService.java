@@ -1,5 +1,6 @@
 package services;
 
+import exceptions.EmptyCartException;
 import models.*;
 import notifications.CustomerNotification;
 import repos.DiscountRepo;
@@ -14,7 +15,6 @@ import static utils.Validate.*;
 public class OrderService {
     //for customer
     private MenuService menuService;
-    private DiscountRepo discountRepo;
     private Order order;
     private IDiscountService discountService;
     private IPaymentService paymentService;
@@ -22,7 +22,6 @@ public class OrderService {
     public OrderService(MenuService menuService) {
         this.menuService=menuService;
         this.discountService=new AmountDiscountService();
-        this.discountRepo=new DiscountRepo();
         this.order=new Order();
     }
 
@@ -66,9 +65,10 @@ public class OrderService {
         Map<FoodItem, OrderItem> currentCart = order.getCart().getShoppingCart();
 
         if (currentCart.isEmpty()) {
-            System.out.println("Cart is Empty !!");
-            return;
+            throw new EmptyCartException();
         }
+
+        viewCartSummary();
 
         System.out.print("Enter the FoodItem ID to remove: ");
         int id = validateInt();
@@ -128,14 +128,20 @@ public class OrderService {
     }
 
     public void viewCartSummary(){
-        order.getCart().displayCart();
+        try{
+            order.getCart().displayCart();
+        }
+        catch(EmptyCartException e){
+            System.out.println(e.getClass().getSimpleName());
+            System.out.println(e.getMessage());
+        }
+
     }
 
     public boolean confirmOrder() {
 
         if(order.getCart().getShoppingCart().isEmpty()){
-            System.out.println("Cart is empty. Cannot place order.");
-            return false;
+            throw new EmptyCartException();
         }
 
         System.out.println("\n------ ORDER SUMMARY ------");
