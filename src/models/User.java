@@ -2,17 +2,19 @@ package models;
 
 import utils.RandomNumberGenerator;
 
-public class User {
+public abstract class User {
     private int id;
     private String name;
     private String password;
-    private UserType userType;
+    private String email;
+    private String phoneNumber;
 
-    public User(String name, String password, UserType userType) {
+    public User(String name, String password,String email,String phoneNumber) {
         this.id = RandomNumberGenerator.generateRandomNumber();
         this.name = name;
         this.password = password;
-        this.userType = userType;
+        this.email=email;
+        this.phoneNumber=phoneNumber;
     }
 
     public String getName() {
@@ -27,7 +29,4 @@ public class User {
         return password;
     }
 
-    public UserType getUserType() {
-        return userType;
-    }
 }

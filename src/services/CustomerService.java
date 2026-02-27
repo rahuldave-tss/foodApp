@@ -19,10 +19,10 @@ public class CustomerService {
     private MenuService menuService;
     private OrderService orderService;
     private DPRepo dpRepo;
-    private User user;
+    private Customer user;
     private OrderRepo orderRepo;
 
-    public CustomerService(MenuService menuService, OrderService orderService, DPRepo dpRepo,User user,OrderRepo orderRepo) {
+    public CustomerService(MenuService menuService, OrderService orderService, DPRepo dpRepo,Customer user,OrderRepo orderRepo) {
         this.menuService = menuService;
         this.orderService = orderService;
         this.dpRepo = dpRepo;

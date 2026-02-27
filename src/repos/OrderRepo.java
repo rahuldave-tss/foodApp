@@ -1,5 +1,6 @@
 package repos;
 
+import models.Customer;
 import models.Order;
 import models.User;
 
@@ -22,9 +23,9 @@ public class OrderRepo {
         return orderHistory;
     }
 
-    public List<Order> getOrdersByCustomer(User user) {
+    public List<Order> getOrdersByCustomer(Customer customer) {
         return orderHistory.stream()
-                .filter(order -> order.getCustomer().equals(user))
+                .filter(order -> order.getCustomer().equals(customer))
                 .collect(Collectors.toList());
     }
 }

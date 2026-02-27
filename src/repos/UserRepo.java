@@ -1,11 +1,8 @@
 package repos;
 
 import models.User;
-import models.UserType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static utils.GlobalConstants.adminPassword;

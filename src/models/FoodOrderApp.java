@@ -1,6 +1,8 @@
 package models;
 
+import controllers.AdminController;
 import exceptions.UserNotFoundException;
+import factory.UserFactory;
 import repos.DPRepo;
 import repos.DiscountRepo;
 import repos.OrderRepo;
@@ -90,11 +92,11 @@ public class FoodOrderApp {
             throw new UserNotFoundException("User with ID " + id + " not found.");
         }
 
-        System.out.print(" Enter your password: ");
+        System.out.print("Enter your password: ");
         String password = scanner.nextLine();
 
         if (!user.getPassword().equals(password)) {
-            System.out.println(" Incorrect password!");
+            System.out.println("Incorrect password!");
             return;
         }
 
@@ -102,34 +104,24 @@ public class FoodOrderApp {
         System.out.println("------------------------------------------------");
 
         redirectUser(user);
+
     }
 
     private void redirectUser(User user) {
+        String currentUser=user.getClass().getSimpleName();
 
-        switch (user.getUserType()) {
-
-            case ADMIN:
-                System.out.println("Welcome Admin, " + user.getName());
-                AdminService adminService =
-                        new AdminService(menuService, dpRepo, userRepo,discountRepo);
-                adminService.displayFeatures();
+        switch (currentUser){
+            case ("Admin"):{
+                AdminController adminController=new AdminController(new AdminService(menuService,dpRepo,userRepo,discountRepo));
+                adminController.start();
                 break;
-
-            case CUSTOMER:
-                System.out.println("Welcome Customer, " + user.getName());
-                CustomerService customerService =
-                        new CustomerService(menuService, orderService, dpRepo, user,orderRepo);
-                customerService.displayFeatures();
-                break;
-
-            case DELIVERY_PARTNER:
-                System.out.println("Welcome Delivery Partner, " + user.getName());
-                DeliveryPartnerService deliveryPartnerService =
-                        new DeliveryPartnerService(dpRepo, user);
-                deliveryPartnerService.displayFeatures();
-                break;
+            }
+            case "Customer":{
+                CustomerController customerController=new CustomerController();
+            }
         }
     }
+
 
     private void register() {
 
@@ -170,9 +162,11 @@ public class FoodOrderApp {
 
         String customerName = inputName();
         String customerPassword = inputPassword();
+        String customerEmail=validateEmail();
+        String customerPhoneNumber=validatePhone();
 
         User customer =
-                new User(customerName, customerPassword, UserType.CUSTOMER);
+                UserFactory.createUser("CUSTOMER",customerName,customerPassword,customerEmail,customerPhoneNumber);
 
         userRepo.addUser(customer);
 
