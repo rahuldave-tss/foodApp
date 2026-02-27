@@ -306,6 +306,7 @@ public class AdminService {
     public void createDiscount(){
         System.out.println("Which type of discount you want to add?: ");
         System.out.println("1. Amount Discount");
+        System.out.print("Enter your choice: ");
         int choice=validateInt();
         IDiscount newDiscount=null;
         switch (choice){
@@ -335,6 +336,7 @@ public class AdminService {
         viewAllDiscounts();
         System.out.println("Which type of discount you want to remove?: ");
         System.out.println("1. Amount Discount");
+        System.out.print("Enter your choice: ");
         int choice=validateInt();
         IDiscount newDiscount=null;
         switch (choice){

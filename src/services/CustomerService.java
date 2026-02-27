@@ -62,7 +62,6 @@ public class CustomerService {
                 }
 
                 case 2:{
-                        orderService.viewCartSummary();
                     try{
                         orderService.removeItemFromCart();
                     }
