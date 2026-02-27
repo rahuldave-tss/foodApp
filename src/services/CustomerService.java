@@ -23,7 +23,7 @@ public class CustomerService {
         this.user=user;
     }
 
-    public void displayFeatures() throws InterruptedException {
+    public void displayFeatures() {
         while(true){
             System.out.println("===Customer DashBoard===");
             System.out.println("1. Add Items to cart");
@@ -72,7 +72,7 @@ public class CustomerService {
         menuService.displayMenu();
     }
 
-    public void assignDeliveryPartner() throws InterruptedException {
+    public void assignDeliveryPartner() {
 
         Order order = orderService.getOrder();
 
@@ -95,25 +95,31 @@ public class CustomerService {
         simulateDelivery(order);
     }
 
-    private void simulateDelivery(Order order) throws InterruptedException {
+    private void simulateDelivery(Order order) {
 
-        System.out.println("Food is being prepared...");
-        Thread.sleep(2000);
+        try{
+            System.out.println("Food is being prepared...");
+            Thread.sleep(2000);
 
-        order.setStatus(OrderStatus.PREPARING);
-        System.out.println("Status: " + order.getStatus());
+            order.setStatus(OrderStatus.PREPARING);
+            System.out.println("Status: " + order.getStatus());
 
-        Thread.sleep(2000);
+            Thread.sleep(2000);
 
-        order.setStatus(OrderStatus.ON_THE_WAY);
-        System.out.println("Status: " + order.getStatus());
+            order.setStatus(OrderStatus.ON_THE_WAY);
+            System.out.println("Status: " + order.getStatus());
 
-        Thread.sleep(2000);
+            Thread.sleep(2000);
 
-        order.setStatus(OrderStatus.DELIVERED);
-        System.out.println("Status: " + order.getStatus());
+            order.setStatus(OrderStatus.DELIVERED);
+            System.out.println("Status: " + order.getStatus());
 
-        System.out.println("Order Delivered Successfully !!");
+            System.out.println("Order Delivered Successfully !!");
+        }
+        catch(InterruptedException interruptedException){
+            System.out.println(interruptedException.getMessage());
+        }
+
     }
 
     public void printInvoice() {

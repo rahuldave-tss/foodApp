@@ -16,11 +16,11 @@ public class FoodOrderApp {
 
     public FoodOrderApp() {
 
-        // Shared Repositories
+        // Shared repos
         this.userRepo = new UserRepo();
         this.dpRepo = new DPRepo();
 
-        // Shared Core Services
+        // Shared core services
         this.menuService = new MenuService();
         this.orderService = new OrderService(menuService);
     }
@@ -55,8 +55,6 @@ public class FoodOrderApp {
             }
         }
     }
-
-    // ================= LOGIN =================
 
     private void login() throws InterruptedException {
 
@@ -111,8 +109,6 @@ public class FoodOrderApp {
         }
     }
 
-    // ================= REGISTER =================
-
     private void register() {
 
         while (true) {
@@ -142,13 +138,11 @@ public class FoodOrderApp {
         String customerName = inputName();
         String customerPassword = inputPassword();
 
-        User customer =
-                new User(customerName, customerPassword, UserType.CUSTOMER);
+        User customer = new User(customerName, customerPassword, UserType.CUSTOMER);
 
         userRepo.addUser(customer);
 
-        System.out.println("New Customer Registered with ID: "
-                + customer.getId());
+        System.out.println("New Customer Registered with ID: " + customer.getId());
     }
 
     private String inputPassword() {

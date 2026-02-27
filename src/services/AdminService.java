@@ -91,27 +91,35 @@ public class AdminService {
     }
 
     private void manageItems() {
-        System.out.println();
-        menuService.displayMenu();
-        System.out.println();
-        System.out.println("Options available: ");
-        System.out.println("1. Create Food Item");
-        System.out.println("2. Remove Food Item");
-        System.out.print("Enter your choice: ");
-        int choice=validateInt();
-        switch (choice){
-            case 1:{
-                addItem();
-                break;
-            }
-            case 2:{
-                removeItem();
-                break;
-            }
-            default:{
-                System.out.println("Enter a valid choice !!");
+        while(true){
+            System.out.println();
+            menuService.displayMenu();
+            System.out.println();
+            System.out.println("Options available: ");
+            System.out.println("1. Create Food Item");
+            System.out.println("2. Remove Food Item");
+            System.out.println("3. Back");
+            System.out.print("Enter your choice: ");
+            int choice=validateInt();
+            switch (choice){
+                case 1:{
+                    addItem();
+                    break;
+                }
+                case 2:{
+                    removeItem();
+                    break;
+                }
+                case 3:{
+                    System.out.println("Back to Admin Panel...");
+                    return;
+                }
+                default:{
+                    System.out.println("Enter a valid choice !!");
+                }
             }
         }
+
     }
 
     private void manageDiscounts() {
@@ -248,13 +256,12 @@ public class AdminService {
 
 
     private IDiscount removeAmountDiscount() {
-
-        System.out.print("Enter the Discount Id to remove that discount: ");
-        int discountId=validateInt();
         if(discountRepo.getAvailableDiscounts().isEmpty()){
             System.out.println("No discounts available !!");
             return null;
         }
+        System.out.print("Enter the Discount Id to remove that discount: ");
+        int discountId=validateInt();
         for(IDiscount discount: discountRepo.getAvailableDiscounts()){
             if(discount.getId()==discountId){
                 return discount;

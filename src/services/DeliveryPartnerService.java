@@ -64,7 +64,7 @@ public class DeliveryPartnerService {
         double earning=0;
         List<Order> orders=dpRepo.getDeliveryPartnerOrders(user);
         for(Order o:orders){
-            //10%
+            //10% fix for now
             earning += 0.1 * o.getFinalAmount();
         }
         System.out.println("Total Earnings: "+earning);
