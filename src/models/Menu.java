@@ -8,6 +8,13 @@ public class Menu {
 
     public Menu() {
         this.itemList=new ArrayList<>();
+        initializeMenu();
+    }
+
+    private void initializeMenu() {
+        itemList.add(new FoodItem("Burger", 50));
+        itemList.add(new FoodItem("Pizza", 200));
+        itemList.add(new FoodItem("Pasta", 100));
     }
 
     public List<FoodItem> getItemList() {

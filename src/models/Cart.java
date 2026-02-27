@@ -1,5 +1,7 @@
 package models;
 
+import exceptions.EmptyCartException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ public class Cart {
     public Cart() {
         shoppingCart = new HashMap<>();
     }
+
 
     public Map<FoodItem, OrderItem> getShoppingCart() {
         return shoppingCart;
@@ -43,8 +46,7 @@ public class Cart {
     public void displayCart() {
 
         if (shoppingCart.isEmpty()) {
-            System.out.println("Your cart is empty.");
-            return;
+            throw new EmptyCartException("Cart is Empty !!");
         }
 
         System.out.println("---------------------------------------------------------------------");

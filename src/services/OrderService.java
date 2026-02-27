@@ -1,6 +1,7 @@
 package services;
 
 import models.*;
+import notifications.CustomerNotification;
 import repos.DiscountRepo;
 
 import java.util.HashMap;
@@ -43,11 +44,21 @@ public class OrderService {
         OrderItem orderItem=new OrderItem(foodItem,quantity);
         order.getCart().addItem(orderItem);
 
-        System.out.print("Do you want to add more items?(y/n) :");
-        String s=validateString();
-        if(s.equalsIgnoreCase("y")){
-            addItemToCart();
+        while(true){
+             System.out.print("Do you want to add more items?(y/n) :");
+             String s=validateString();
+             if(s.equalsIgnoreCase("y")){
+                 addItemToCart();
+                 break;
+             }
+             else if(s.equalsIgnoreCase("n")){
+                 break;
+             }
+             else{
+                 System.out.println("Invalid input !!");
+             }
         }
+
     }
 
     public void removeItemFromCart() {
@@ -62,27 +73,57 @@ public class OrderService {
         System.out.print("Enter the FoodItem ID to remove: ");
         int id = validateInt();
 
-        FoodItem itemToRemove = null;
+        FoodItem itemToModify = null;
 
         for (FoodItem food : currentCart.keySet()) {
             if (food.getId() == id) {
-                itemToRemove = food;
+                itemToModify = food;
                 break;
             }
         }
 
-        if (itemToRemove != null) {
-            currentCart.remove(itemToRemove);
-            System.out.println("Item removed successfully.");
+        if (itemToModify != null) {
+
+            OrderItem orderItem = currentCart.get(itemToModify);
+            int currentQty = orderItem.getQuantity();
+
+            System.out.println("Current quantity in cart: " + currentQty);
+            System.out.print("Enter quantity to remove: ");
+            int qtyToRemove = validateInt();
+
+            if (qtyToRemove <= 0) {
+                System.out.println("Invalid quantity!");
+            }
+            else if (qtyToRemove < currentQty) {
+                orderItem.setQuantity(currentQty - qtyToRemove);
+                System.out.println("Quantity updated successfully.");
+            }
+            else if (qtyToRemove == currentQty) {
+                currentCart.remove(itemToModify);
+                System.out.println("Item removed completely from cart.");
+            }
+            else {
+                System.out.println("You cannot remove more than existing quantity!");
+            }
+
         } else {
             System.out.println("Item not found in cart.");
         }
 
-        System.out.print("Do you want to remove more items? (y/n): ");
-        String s = validateString();
+        while (true) {
+            System.out.print("Do you want to remove more items? (y/n): ");
+            String s = validateString();
 
-        if (s.equalsIgnoreCase("y")) {
-            removeItemFromCart();
+            if (s.equalsIgnoreCase("y")) {
+                removeItemFromCart();
+                break;
+            }
+            else if (s.equalsIgnoreCase("n")) {
+                break;
+            }
+            else {
+                System.out.println("Invalid input !!");
+            }
         }
     }
 
@@ -90,11 +131,11 @@ public class OrderService {
         order.getCart().displayCart();
     }
 
-    public void confirmOrder() {
+    public boolean confirmOrder() {
 
         if(order.getCart().getShoppingCart().isEmpty()){
             System.out.println("Cart is empty. Cannot place order.");
-            return;
+            return false;
         }
 
         System.out.println("\n------ ORDER SUMMARY ------");
@@ -122,11 +163,12 @@ public class OrderService {
                 break;
             default:
                 System.out.println("Invalid option.");
-                return;
+                return false;
         }
 
         paymentService.doPayment(total);
         order.setFinalAmount(total);
+        return true;
     }
 
     public double cartTotal(){
@@ -144,7 +186,9 @@ public class OrderService {
         return fixedAmount-discountAmount;
     }
 
-
+    public void resetOrder() {
+        this.order = new Order();
+    }
 
 
 }

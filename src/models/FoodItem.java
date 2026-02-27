@@ -1,13 +1,14 @@
 package models;
 
+import utils.RandomNumberGenerator;
+
 public class FoodItem {
-    private static int newId=1;
     private int id;
     private String name;
     private double price;
 
     public FoodItem(String name, double price) {
-        id=newId++;
+        id=RandomNumberGenerator.generateRandomNumber();
         this.name = name;
         this.price = price;
     }

@@ -7,6 +7,7 @@ import repos.UserRepo;
 
 import java.util.List;
 
+import static utils.GlobalConstants.deliveryPartnerCommission;
 import static utils.Validate.*;
 
 public class DeliveryPartnerService {
@@ -18,7 +19,7 @@ public class DeliveryPartnerService {
         this.user=loggedInUser;
     }
 
-    public void displayFeatures() throws InterruptedException {
+    public void displayFeatures()  {
         while(true){
             System.out.println("===Delivery Partner DashBoard===");
             System.out.println("1. Show Order History");
@@ -64,8 +65,7 @@ public class DeliveryPartnerService {
         double earning=0;
         List<Order> orders=dpRepo.getDeliveryPartnerOrders(user);
         for(Order o:orders){
-            //10% fix for now
-            earning += 0.1 * o.getFinalAmount();
+            earning += deliveryPartnerCommission * o.getFinalAmount();
         }
         System.out.println("Total Earnings: "+earning);
     }

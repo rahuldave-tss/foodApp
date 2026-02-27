@@ -1,6 +1,8 @@
 package models;
 
+import exceptions.UserNotFoundException;
 import repos.DPRepo;
+import repos.OrderRepo;
 import repos.UserRepo;
 import services.*;
 
@@ -13,22 +15,23 @@ public class FoodOrderApp {
     private DPRepo dpRepo;
     private MenuService menuService;
     private OrderService orderService;
+    private OrderRepo orderRepo;
 
     public FoodOrderApp() {
 
-        // Shared repos
+        // Shared Repositories
         this.userRepo = new UserRepo();
         this.dpRepo = new DPRepo();
+        this.orderRepo = new OrderRepo();
 
-        // Shared core services
+        // Shared Core Services
         this.menuService = new MenuService();
         this.orderService = new OrderService(menuService);
     }
 
-    public void start() throws InterruptedException {
+    public void start() {
 
         while (true) {
-
             System.out.println("=== Welcome to Food Order App ===");
             System.out.println("1. Register");
             System.out.println("2. Login");
@@ -56,7 +59,7 @@ public class FoodOrderApp {
         }
     }
 
-    private void login() throws InterruptedException {
+    private void login() {
 
         System.out.println("=== Login ===");
         System.out.print("Enter Id: ");
@@ -65,8 +68,7 @@ public class FoodOrderApp {
         User user = userRepo.getUserById(id);
 
         if (user == null) {
-            System.out.println("Invalid ID !!");
-            return;
+            throw new UserNotFoundException("User with ID " + id + " not found.");
         }
 
         System.out.print("Enter your password: ");
@@ -82,7 +84,7 @@ public class FoodOrderApp {
         redirectUser(user);
     }
 
-    private void redirectUser(User user) throws InterruptedException {
+    private void redirectUser(User user) {
 
         switch (user.getUserType()) {
 
@@ -96,7 +98,7 @@ public class FoodOrderApp {
             case CUSTOMER:
                 System.out.println("Welcome Customer, " + user.getName());
                 CustomerService customerService =
-                        new CustomerService(menuService, orderService, dpRepo, user);
+                        new CustomerService(menuService, orderService, dpRepo, user,orderRepo);
                 customerService.displayFeatures();
                 break;
 
@@ -116,6 +118,7 @@ public class FoodOrderApp {
             System.out.println("=== Registration ===");
             System.out.println("1. Customer");
             System.out.println("2. Back");
+            System.out.print("Enter your choice: ");
 
             int choice = validateInt();
 
@@ -138,11 +141,13 @@ public class FoodOrderApp {
         String customerName = inputName();
         String customerPassword = inputPassword();
 
-        User customer = new User(customerName, customerPassword, UserType.CUSTOMER);
+        User customer =
+                new User(customerName, customerPassword, UserType.CUSTOMER);
 
         userRepo.addUser(customer);
 
-        System.out.println("New Customer Registered with ID: " + customer.getId());
+        System.out.println("New Customer Registered with ID: "
+                + customer.getId());
     }
 
     private String inputPassword() {

@@ -1,5 +1,6 @@
 package services;
 
+import exceptions.EmptyMenuException;
 import models.FoodItem;
 import models.Menu;
 import models.OrderItem;
@@ -57,8 +58,7 @@ public class MenuService {
 
     public void displayMenu() {
         if (menu.getItemList().isEmpty()) {
-            System.out.println("Menu is empty.");
-            return;
+            throw new EmptyMenuException("Menu is empty. Please add items to the menu.");
         }
 
         System.out.println("-------------------------------------------------");
