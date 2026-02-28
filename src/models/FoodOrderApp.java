@@ -1,12 +1,11 @@
 package models;
 
 import controllers.AdminController;
+import controllers.CustomerController;
+import controllers.DeliveryPartnerController;
 import exceptions.UserNotFoundException;
 import factory.UserFactory;
-import repos.DPRepo;
-import repos.DiscountRepo;
-import repos.OrderRepo;
-import repos.UserRepo;
+import repos.*;
 import services.*;
 
 import static utils.GlobalConstants.scanner;
@@ -16,22 +15,25 @@ public class FoodOrderApp {
 
     private UserRepo userRepo;
     private DPRepo dpRepo;
-    private MenuService menuService;
-    private OrderService orderService;
-    private OrderRepo orderRepo;
+    private MenuRepo menuRepo;
+    private CustomerRepo customerRepo;
     private DiscountRepo discountRepo;
+    private DiscountService discountService;
+    private AdminController adminController;
+    private CustomerController customerController;
+    private DeliveryPartnerController deliveryPartnerController;
+    private AdminService adminService;
+    private CustomerService customerService;
+    private DeliveryPartnerService deliveryPartnerService;
 
     public FoodOrderApp() {
-
-        // Shared Repositories
         this.userRepo = new UserRepo();
         this.dpRepo = new DPRepo();
-        this.orderRepo = new OrderRepo();
+        this.menuRepo = new MenuRepo();
         this.discountRepo=new DiscountRepo();
+        this.customerRepo=new CustomerRepo();
 
-        // Shared Core Services
-        this.menuService = new MenuService();
-        this.orderService = new OrderService(menuService);
+        this.discountService=new DiscountService(discountRepo);
     }
 
     public void start() {
@@ -83,7 +85,7 @@ public class FoodOrderApp {
         System.out.println("                     LOGIN                      ");
         System.out.println("================================================");
 
-        System.out.print(" Enter ID: ");
+        System.out.print("Enter ID: ");
         int id = validateInt();
 
         User user = userRepo.getUserById(id);
@@ -108,16 +110,22 @@ public class FoodOrderApp {
     }
 
     private void redirectUser(User user) {
-        String currentUser=user.getClass().getSimpleName();
 
-        switch (currentUser){
-            case ("Admin"):{
-                AdminController adminController=new AdminController(new AdminService(menuService,dpRepo,userRepo,discountRepo));
+        switch (user.getRole()){
+            case ADMIN:{
+                AdminController adminController=new AdminController(new AdminService(menuRepo,dpRepo,userRepo,discountRepo,customerRepo));
                 adminController.start();
                 break;
             }
-            case "Customer":{
-                CustomerController customerController=new CustomerController();
+            case CUSTOMER:{
+                CustomerController customerController=new CustomerController(new CustomerService(dpRepo,discountRepo,user,discountService),menuRepo,user);
+                customerController.start();
+                break;
+            }
+            case DELIVERY_PARTNER:{
+                DeliveryPartnerController deliveryPartnerController=new DeliveryPartnerController(new DeliveryPartnerService(dpRepo,user));
+                deliveryPartnerController.start();
+                break;
             }
         }
     }
@@ -163,17 +171,19 @@ public class FoodOrderApp {
         String customerName = inputName();
         String customerPassword = inputPassword();
         String customerEmail=validateEmail();
-        String customerPhoneNumber=validatePhone();
+        String customerPhoneNumber=validatePhoneNumber();
 
         User customer =
-                UserFactory.createUser("CUSTOMER",customerName,customerPassword,customerEmail,customerPhoneNumber);
+                UserFactory.createUser(Role.CUSTOMER,customerName,customerPassword,customerEmail,customerPhoneNumber);
 
         userRepo.addUser(customer);
+        customerRepo.addCustomer(customer);
 
         System.out.println("\n New Customer Registered Successfully!");
         System.out.println(" Your Customer ID is: " + customer.getId());
         System.out.println("------------------------------------------------\n");
     }
+
 
     private String inputPassword() {
         System.out.print("Enter your password: ");

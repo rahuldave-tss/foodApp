@@ -1,31 +1,32 @@
 package factory;
 
-import models.User;
+import models.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class UserFactory {
 
-    private static final Map<String, UserCreator> registry = new HashMap<>();
-
     private UserFactory() {} // prevent instantiation
 
-    public static void registerUser(String type, UserCreator creator) {
-        registry.put(type.toUpperCase(), creator);
-    }
-
-    public static User createUser(String type,
+    public static User createUser(Role role,
                                   String name,
                                   String password,
                                   String email,
                                   String phoneNumber) {
 
-        UserCreator creator = registry.get(type.toUpperCase());
+        switch (role) {
+            case ADMIN:
+                return new Admin(name, password, email, phoneNumber);
 
-        if (creator == null) {
-            throw new IllegalArgumentException("Unknown user type: " + type);
+            case CUSTOMER:
+                return new Customer(name, password, email, phoneNumber);
+
+            case DELIVERY_PARTNER:
+                return new DeliveryPartner(name, password, email, phoneNumber);
+
+            default:
+                throw new IllegalArgumentException("Unknown role: " + role);
         }
-
-        return creator.create(name, password, email, phoneNumber);
     }
 }

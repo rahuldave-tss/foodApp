@@ -6,9 +6,8 @@ import exceptions.NoDeliveryPartnerAvailableException;
 import exceptions.NoOrdersFoundException;
 import models.*;
 import repos.DPRepo;
-import repos.OrderRepo;
+import repos.DiscountRepo;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -16,149 +15,74 @@ import java.util.Random;
 import static utils.Validate.validateInt;
 
 public class CustomerService {
-    private MenuService menuService;
-    private OrderService orderService;
     private DPRepo dpRepo;
-    private Customer user;
-    private OrderRepo orderRepo;
+    private Customer customer;
+    private DiscountRepo discountRepo;
+    private IPaymentService paymentService;
+    private DiscountService discountService;
 
-    public CustomerService(MenuService menuService, OrderService orderService, DPRepo dpRepo,Customer user,OrderRepo orderRepo) {
-        this.menuService = menuService;
-        this.orderService = orderService;
+    public CustomerService(DPRepo dpRepo,DiscountRepo discountRepo,User customer,DiscountService discountService) {
         this.dpRepo = dpRepo;
-        this.user=user;
-        this.orderRepo=orderRepo;
-        //to show order history and assign delivery partner to the order, we need to set the customer in order service
-        orderService.getOrder().setCustomer(user);
+        this.discountRepo=discountRepo;
+        this.customer=(Customer) customer;
+        this.discountService=discountService;
     }
 
-    public void displayFeatures(){
+    public void placeOrder(){
+        Order order=createNewOrderFromCart();
+        takePaymentFromCustomer(order);
+        assignDeliveryPartner(order);
+        printInvoice(order);
+        customer.getCart().clear();
+    }
 
-        while(true){
-
-            System.out.println("\n================================================");
-            System.out.println("                CUSTOMER DASHBOARD              ");
-            System.out.println("================================================");
-            System.out.println(" Please select an option:");
-            System.out.println("------------------------------------------------");
-            System.out.println("  1. Add Items to Cart");
-            System.out.println("  2. Remove Items from Cart");
-            System.out.println("  3. View Cart Summary");
-            System.out.println("  4. Place Order");
-            System.out.println("  5. View Order History");
-            System.out.println("  6. Back to Main Menu");
-            System.out.println("------------------------------------------------");
-            System.out.print(" Enter your choice (1-6): ");
-
-            int choice = validateInt();
-            System.out.println();
-
+    private void takePaymentFromCustomer(Order order) {
+        System.out.println();
+        System.out.print("Which type of Payment you want to opt?: ");
+        System.out.println("1. Cash");
+        System.out.println("2. UPI");
+        IPaymentService iPaymentService=null;
+        boolean flag=false;
+        while (true){
+            System.out.print("Enter your choice: ");
+            int choice=validateInt();
             switch (choice){
-
                 case 1:{
-                    displayMenu();
-                    orderService.addItemToCart();
+                    iPaymentService=PaymentFactory.getPaymentService(PaymentType.CASH);
+                    flag=true;
                     break;
                 }
-
                 case 2:{
-                    try{
-                        orderService.removeItemFromCart();
-                    }
-                    catch(EmptyCartException e){
-                        System.out.println(" Error: " + e.getClass().getSimpleName());
-                        System.out.println(" " + e.getMessage());
-                    }
+                    iPaymentService=PaymentFactory.getPaymentService(PaymentType.UPI);
+                    flag=true;
                     break;
                 }
-
-                case 3:{
-                    orderService.viewCartSummary();
-                    break;
-                }
-
-                case 4:{
-                    System.out.println("------------------------------------------------");
-                    System.out.println("               ORDER PROCESSING                 ");
-                    System.out.println("------------------------------------------------");
-
-                    try{
-                        assignDeliveryPartner();
-                    }
-                    catch(NoDeliveryPartnerAvailableException e){
-                        System.out.println(e.getClass().getSimpleName());
-                        System.out.println(e.getMessage());
-                        System.out.println("Order Cancelled!");
-                        break;
-                    }
-
-                    boolean confirm = orderService.confirmOrder();
-                    if(!confirm){
-                        System.out.println("Order Cancelled!");
-                        break;
-                    }
-
-                    try{
-                        printInvoice();
-                    }
-                    catch(EmptyCartException e){
-                        System.out.println(e.getClass().getSimpleName());
-                        System.out.println(e.getMessage());
-                    }
-
-                    Order completedOrder = orderService.getOrder();
-                    completedOrder.setCustomer(user);
-                    orderRepo.addOrder(completedOrder);
-                    orderService.resetOrder();
-                    break;
-                }
-
-                case 5:{
-                    try{
-                        viewOrderHistory();
-                    }
-                    catch(NoOrdersFoundException e){
-                        System.out.println(e.getClass().getSimpleName());
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                }
-
-                case 6:{
-                    System.out.println(" Returning to Main Menu...");
-                    System.out.println("================================================\n");
-                    return;
-                }
-
-                default:{
-                    System.out.println(" Invalid choice! Please enter a number between 1 and 6.");
-                }
+                default:
+                    System.out.println("Enter a valid choice !!");
             }
+            if(flag)break;
         }
+        iPaymentService.doPayment(order.getFinalAmount());
     }
 
-    private void displayMenu(){
-        try{
-            menuService.displayMenu();
-        }
-        catch(EmptyMenuException e){
-            System.out.println(e.getClass().getSimpleName());
-            System.out.println(e.getMessage());
-        }
+    private Order createNewOrderFromCart() {
+        Cart currentCart=customer.getCart();
+        double cartTotal=currentCart.getTotal();
+        double discountApplied= discountService.applyMaxDiscount(cartTotal);
+        double finalAmount=cartTotal-discountApplied;
+        Order order=new Order(currentCart.getShoppingCart(),finalAmount,customer);
+        return order;
     }
 
-    public void assignDeliveryPartner() {
+    public void assignDeliveryPartner(Order order) {
 
-        Order order = orderService.getOrder();
-
-        List<User> partners = dpRepo.getDeliveryPartners();
-
+        List<DeliveryPartner> partners = dpRepo.getDeliveryPartners();
         if (partners == null || partners.isEmpty()) {
             throw new NoDeliveryPartnerAvailableException();
         }
 
         Random random = new Random();
-        User partner = partners.get(random.nextInt(partners.size()));
+        DeliveryPartner partner = partners.get(random.nextInt(partners.size()));
 
         order.setDeliveryPartner(partner);
 
@@ -197,16 +121,15 @@ public class CustomerService {
 
     }
 
-    public void printInvoice() {
+    public void printInvoice(Order order) {
 
-        Order order = orderService.getOrder();
-        Cart cart = order.getCart();
+        Cart cart = customer.getCart();
 
         if (cart == null || cart.getShoppingCart().isEmpty()) {
             throw new EmptyCartException();
         }
 
-        Map<FoodItem,OrderItem> items = cart.getShoppingCart();
+        Map<FoodItem, OrderItem> items = cart.getShoppingCart();
 
         System.out.println("\n==================================================================");
         System.out.println("                             INVOICE                          ");
@@ -217,6 +140,10 @@ public class CustomerService {
                 (order.getDeliveryPartner() != null
                         ? order.getDeliveryPartner().getName()
                         : "Not Assigned"));
+        System.out.println("Delivery Address: " +
+                (order.getCustomer().getCustomerAddress() != null
+                        ? order.getCustomer().getCustomerAddress()
+                        : "Not Provided"));
         System.out.println("==================================================================");
 
         System.out.printf("%-5s %-22s %-8s %-10s %-12s%n",
@@ -242,8 +169,8 @@ public class CustomerService {
 
         System.out.println("------------------------------------------------------------------");
 
-        double discount = orderService.getDiscountAmount();
-        double finalAmount = orderService.calculateTotal();
+        double discount = discountService.applyMaxDiscount(cart.getTotal());
+        double finalAmount = order.getFinalAmount();
 
         System.out.printf("%-48s %-12.2f%n", "Grand Total:", grandTotal);
         System.out.printf("%-48s %-12.2f%n", "Discount Applied:", discount);
@@ -256,7 +183,7 @@ public class CustomerService {
 
     public void viewOrderHistory() {
 
-        List<Order> history = orderRepo.getOrdersByCustomer(user);
+        List<Order> history = customer.getOrderHistory();
 
         if (history == null || history.isEmpty()) {
             throw new NoOrdersFoundException();

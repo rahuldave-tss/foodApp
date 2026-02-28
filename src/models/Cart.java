@@ -20,9 +20,7 @@ public class Cart {
     }
 
     public void addItem(OrderItem item) {
-
         FoodItem food = item.getFoodItem();
-
         if (shoppingCart.containsKey(food)) {
             OrderItem existingItem = shoppingCart.get(food);
             existingItem.setQuantity(
@@ -37,10 +35,14 @@ public class Cart {
         double total = 0;
 
         for (OrderItem item : shoppingCart.values()) {
-            total += item.getQuantity() * item.getFoodItem().getPrice();
+            total += item.getTotal();
         }
 
         return total;
+    }
+
+    public void clear(){
+        shoppingCart.clear();
     }
 
     public void displayCart() {

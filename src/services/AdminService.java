@@ -3,98 +3,101 @@ package services;
 import exceptions.EmptyMenuException;
 import exceptions.ItemAlreadyPresentException;
 import models.*;
-import repos.DPRepo;
-import repos.DiscountRepo;
-import repos.UserRepo;
+import repos.*;
 
 import java.util.List;
 
 public class AdminService {
 
-    private final MenuService menuService;
+    private final MenuRepo menuRepo;
     private final DiscountRepo discountRepo;
     private final DPRepo dpRepo;
     private final UserRepo userRepo;
+    private CustomerRepo customerRepo;
 
-    public AdminService(MenuService menuService,
+    public AdminService(MenuRepo menuRepo,
                         DPRepo dpRepo,
                         UserRepo userRepo,
-                        DiscountRepo discountRepo) {
-        this.menuService = menuService;
+                        DiscountRepo discountRepo, CustomerRepo customerRepo) {
+        this.menuRepo = menuRepo;
         this.dpRepo = dpRepo;
         this.userRepo = userRepo;
         this.discountRepo = discountRepo;
+        this.customerRepo=customerRepo;
     }
-
-    // ================= MENU =================
 
     public int addItem(String itemName, double price) {
         if (itemAlreadyPresent(itemName)) {
             throw new ItemAlreadyPresentException("Food Item already present in Menu");
         }
-        return menuService.addFoodItem(itemName, price);
+        FoodItem foodItem=new FoodItem(itemName,price);
+        menuRepo.addItem(foodItem);
+        return foodItem.getId();
     }
 
     public boolean removeItem(int itemId) {
-        if (menuService.getMenu().getItemList().isEmpty()) {
+        if (menuRepo.getMenu().isEmpty()) {
             throw new EmptyMenuException("No food items available");
         }
-        return menuService.removeFoodItem(itemId);
+        FoodItem foodItem=menuRepo.getFoodItemById(itemId);
+        menuRepo.removeItem(foodItem);
+        return true;
     }
 
     public List<FoodItem> getAllItems() {
-        return menuService.getMenu().getItemList();
+        return menuRepo.getMenu();
     }
 
     private boolean itemAlreadyPresent(String itemName) {
-        return menuService.getMenu().getItemList()
+        return menuRepo.getMenu()
                 .stream()
                 .anyMatch(f -> f.getName().equalsIgnoreCase(itemName));
     }
 
-    // ================= DISCOUNT =================
-
-    public void addDiscount(IDiscount discount) {
+    public void addDiscount(DiscountStrategy discount) {
         discountRepo.getAvailableDiscounts().add(discount);
     }
 
     public boolean removeDiscount(int discountId) {
         return discountRepo.getAvailableDiscounts()
-                .removeIf(d -> d.getId() == discountId);
+                .removeIf(d -> d.getDiscountId() == discountId);
     }
 
-    public boolean updateDiscount(int id, double newPercentage) {
-        for (IDiscount discount : discountRepo.getAvailableDiscounts()) {
-            if (discount.getId() == id) {
-                discount.setDiscountPercentage(newPercentage);
-                return true;
-            }
+    public void updateDiscount(int id, double newPercentage) {
+        DiscountStrategy discount= discountRepo.findById(id);
+        if(discount==null){
+            System.out.println("No such discount available !!");
+            return;
         }
-        return false;
+        discount.setDiscountPercentage(newPercentage);
     }
 
-    public List<IDiscount> getAllDiscounts() {
+    public List<DiscountStrategy> getAllDiscounts() {
         return discountRepo.getAvailableDiscounts();
     }
 
-    // ================= DELIVERY PARTNER =================
-
-    public User addDeliveryPartner(User partner) {
+    public void addDeliveryPartner(User partner) {
         userRepo.addUser(partner);
-        dpRepo.addPartner(partner);
-        return partner;
+        dpRepo.addPartner((DeliveryPartner) partner);
     }
 
-    public boolean removeDeliveryPartner(int partnerId) {
-        User partner = userRepo.getUserById(partnerId);
-        if (partner == null) return false;
+    public void removeDeliveryPartner(int partnerId) {
+        DeliveryPartner partner = dpRepo.getDeliveryPartnerById(partnerId);
+        if (partner == null){
+            System.out.println("No such partner found !!");
+            return;
+        }
 
-        userRepo.removeUser(partnerId);
+        userRepo.removeUser(partner.getId());
         dpRepo.removePartner(partner);
-        return true;
+        System.out.println("Delivery Partner removed successfully !!");
     }
 
-    public List<User> getAllDeliveryPartners() {
+    public List<DeliveryPartner> getAllDeliveryPartners() {
         return dpRepo.getDeliveryPartners();
+    }
+
+    public List<Customer> getAllCustomers(){
+        return customerRepo.getCustomerList();
     }
 }

@@ -3,9 +3,11 @@ package utils;
 import java.util.Scanner;
 
 public class GlobalConstants {
-    public static Scanner scanner=new Scanner(System.in);
-    public static int randomNumberCapacity=1000;
-    public static String adminUsername="Rahul";
-    public static String adminPassword="admin123";
-    public static double deliveryPartnerCommission=0.1; //10%
+    public static final Scanner scanner=new Scanner(System.in);
+    public static final int randomNumberCapacity=1000;
+    public static final String adminUsername="Rahul";
+    public static final String adminPassword="admin123";
+    public static final String adminEmail="admin@gmail.com";
+    public static final String adminPhoneNumber="9429440193";
+    public static final double deliveryPartnerCommission=0.1; //10%
 }

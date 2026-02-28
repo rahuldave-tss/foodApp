@@ -1,35 +1,41 @@
 package repos;
 
 import models.AmountDiscount;
-import models.IDiscount;
+import models.DiscountStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 
 public class DiscountRepo {
-    private List<IDiscount> availableDiscounts;
+    private List<DiscountStrategy> availableDiscounts;
 
     public DiscountRepo(){
         availableDiscounts=new ArrayList<>();
         //initial discount
-        this.addDiscount(new AmountDiscount(500.0,10));
+        this.addDiscount(new AmountDiscount("Amount Discount",500.0,10));
     }
 
-    public List<IDiscount> getAvailableDiscounts() {
+    public List<DiscountStrategy> getAvailableDiscounts() {
         return availableDiscounts;
     }
 
-    public void setAvailableDiscounts(List<IDiscount> availableDiscounts) {
+    public void setAvailableDiscounts(List<DiscountStrategy> availableDiscounts) {
         this.availableDiscounts = availableDiscounts;
     }
 
-    public void addDiscount(IDiscount discount){
+    public void addDiscount(DiscountStrategy discount){
         availableDiscounts.add(discount);
     }
 
-    public void removeDiscount(IDiscount discount){
+    public void removeDiscount(DiscountStrategy discount){
         availableDiscounts.remove(discount);
+    }
+
+    public DiscountStrategy findById(int id){
+        return availableDiscounts.stream()
+                .filter(d->d.getDiscountId()==id)
+                .findFirst()
+                .orElse(null);
     }
 
 }

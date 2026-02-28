@@ -1,7 +1,51 @@
 package utils;
+import java.util.regex.Pattern;
+
 import static utils.GlobalConstants.scanner;
 
 public class Validate {
+
+    public static String validateEmail() {
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+
+        String email;
+
+        while (true) {
+            System.out.print("Enter your email: ");
+            email = scanner.nextLine();
+
+            if (pattern.matcher(email).matches()) {
+                break;
+            } else {
+                System.out.println("Invalid email. Please try again.");
+            }
+        }
+        return email;
+    }
+
+    public static String validatePhoneNumber() {
+
+        String phoneRegex = "^[6-9][0-9]{9}$";
+        Pattern pattern = Pattern.compile(phoneRegex);
+
+        String phone;
+
+        while (true) {
+            System.out.print("Enter your phone number: ");
+            phone = scanner.nextLine();
+
+            if (pattern.matcher(phone).matches()) {
+                break;
+            } else {
+                System.out.println("Invalid phone number. Please enter exactly 10 digits.");
+            }
+        }
+
+        return phone;
+    }
+
 
     public static int validateInt(){
         int temp;

@@ -1,15 +1,16 @@
 package models;
 
-import services.OrderService;
 import utils.RandomNumberGenerator;
 
-public class AmountDiscount implements IDiscount{
+public class AmountDiscount implements DiscountStrategy {
     private int id;
+    private String discountName;
     private double amount;
     private double discountPercentage;
 
-    public AmountDiscount(double amount, double discountPercentage) {
+    public AmountDiscount(String discountName,double amount, double discountPercentage) {
         id=RandomNumberGenerator.generateRandomNumber();
+        this.discountName=discountName;
         this.amount = amount;
         this.discountPercentage = discountPercentage;
     }
@@ -18,18 +19,24 @@ public class AmountDiscount implements IDiscount{
         return id;
     }
 
-    @Override
-    public void setDiscountPercentage(double discountPercentage) {
-        this.discountPercentage = discountPercentage;
+    public int getDiscountId() {
+        return id;
+    }
+
+    public double getAmount() {
+        return amount;
     }
 
     public double getDiscountPercentage() {
         return discountPercentage;
     }
 
+    public void setDiscountPercentage(double discountPercentage) {
+        this.discountPercentage = discountPercentage;
+    }
 
-    public double getAmount() {
-        return amount;
+    public double applyDiscount(){
+        return Math.max(0,amount-(amount*discountPercentage)/100);
     }
 
     @Override

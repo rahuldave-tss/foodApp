@@ -36,11 +36,8 @@ public class FoodItem {
 
     @Override
     public String toString() {
-        return "FoodItem{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                '}';
+        return String.format("%-10d %-20s %-10.2f",
+                id, name, price);
     }
 
     @Override

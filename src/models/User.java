@@ -8,13 +8,15 @@ public abstract class User {
     private String password;
     private String email;
     private String phoneNumber;
+    private Role role;
 
-    public User(String name, String password,String email,String phoneNumber) {
+    public User(String name, String password,String email,String phoneNumber,Role role) {
         this.id = RandomNumberGenerator.generateRandomNumber();
         this.name = name;
         this.password = password;
         this.email=email;
         this.phoneNumber=phoneNumber;
+        this.role=role;
     }
 
     public String getName() {
@@ -29,4 +31,32 @@ public abstract class User {
         return password;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "+----+----------------+----------------+----------------------+--------------+----------+\n" +
+                        "| ID | Name           | Password       | Email                | Phone Number | Role     |\n" +
+                        "+----+----------------+----------------+----------------------+--------------+----------+\n" +
+                        "| %-2d | %-14s | %-14s | %-20s | %-12s | %-8s |\n" +
+                        "+----+----------------+----------------+----------------------+--------------+----------+",
+                id,
+                name,
+                password,
+                email,
+                phoneNumber,
+                role
+        );
+    }
 }

@@ -1,12 +1,13 @@
 package repos;
 
+import models.Admin;
+import models.Role;
 import models.User;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static utils.GlobalConstants.adminPassword;
-import static utils.GlobalConstants.adminUsername;
+import static utils.GlobalConstants.*;
 
 public class UserRepo {
     //id -> user
@@ -34,7 +35,7 @@ public class UserRepo {
 
     public void init(){
         //Hardcoding an admin user for testing
-        User admin=new User(adminUsername,adminPassword, UserType.ADMIN);
+        Admin admin=new Admin(adminUsername,adminPassword, adminEmail,adminPhoneNumber);
         userList.put(1, admin);
     }
 

@@ -25,6 +25,10 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
+    public double getTotal(){
+        return foodItem.getPrice()*quantity;
+    }
+
     @Override
     public String toString() {
         return "OrderItem{" +
