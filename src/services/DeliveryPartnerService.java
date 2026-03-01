@@ -1,12 +1,11 @@
 package services;
 
-import models.DeliveryPartner;
-import models.Order;
-import models.User;
+import models.*;
 import repos.DPRepo;
 import repos.UserRepo;
 
 import java.util.List;
+import java.util.Queue;
 
 import static utils.GlobalConstants.deliveryPartnerCommission;
 import static utils.Validate.*;
@@ -14,11 +13,18 @@ import static utils.Validate.*;
 public class DeliveryPartnerService {
     private DPRepo dpRepo;
     private DeliveryPartner deliveryPartner;
+    private DeliveryManager deliveryManager;
 
-    public DeliveryPartnerService(DPRepo dpRepo,User deliveryPartner) {
+    public DeliveryPartnerService(DPRepo dpRepo,User deliveryPartner,DeliveryManager deliveryManager) {
         this.dpRepo=dpRepo;
         this.deliveryPartner=(DeliveryPartner) deliveryPartner;
+        this.deliveryManager=deliveryManager;
     }
+
+    public void confirmOrder(DeliveryPartner partner) {
+        deliveryManager.completeCurrentOrder(partner);
+    }
+
 
     public void showOrderHistory(){
         List<Order> orders = dpRepo.getDeliveryPartnerOrders(deliveryPartner);

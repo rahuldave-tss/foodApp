@@ -76,6 +76,7 @@ public class Order implements Subject {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+        notifyObservers();
     }
 
     private String getItemsSummary() {

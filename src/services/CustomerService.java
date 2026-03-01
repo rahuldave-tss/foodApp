@@ -8,10 +8,12 @@ import models.*;
 import repos.DPRepo;
 import repos.DiscountRepo;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static models.OrderStatus.ASSIGNED;
 import static utils.Validate.validateInt;
 
 public class CustomerService {
@@ -19,12 +21,14 @@ public class CustomerService {
     private Customer customer;
     private DiscountRepo discountRepo;
     private DiscountService discountService;
+    private DeliveryManager deliveryManager;
 
-    public CustomerService(DPRepo dpRepo,DiscountRepo discountRepo,User customer,DiscountService discountService) {
+    public CustomerService(DPRepo dpRepo,DiscountRepo discountRepo,User customer,DiscountService discountService,DeliveryManager deliveryManager) {
         this.dpRepo = dpRepo;
         this.discountRepo=discountRepo;
         this.customer=(Customer) customer;
         this.discountService=discountService;
+        this.deliveryManager=deliveryManager;
     }
 
     public void placeOrder(){
@@ -48,7 +52,7 @@ public class CustomerService {
             System.out.println("Exception: " + e.getClass().getSimpleName());
             System.out.println(e.getMessage());
         }
-        customer.addOrderToHistory(new Order(order));
+        customer.addOrderToHistory(order);
         customer.getCart().clear();
     }
 
@@ -86,30 +90,13 @@ public class CustomerService {
         double cartTotal=currentCart.getTotal();
         double discountApplied= discountService.applyMaxDiscount(cartTotal);
         double finalAmount=cartTotal-discountApplied;
-        Order order=new Order(currentCart.getShoppingCart(),finalAmount,customer);
+        HashMap<FoodItem,OrderItem> items=new HashMap<>(currentCart.getShoppingCart());
+        Order order=new Order(items,finalAmount,customer);
         return order;
     }
 
     public void assignDeliveryPartner(Order order) {
-
-        List<DeliveryPartner> partners = dpRepo.getDeliveryPartners();
-        if (partners == null || partners.isEmpty()) {
-            throw new NoDeliveryPartnerAvailableException();
-        }
-
-        Random random = new Random();
-        DeliveryPartner partner = partners.get(random.nextInt(partners.size()));
-
-        order.setDeliveryPartner(partner);
-
-        dpRepo.getDeliveryPartnerOrders(partner).add(new Order(order));
-
-        System.out.println("\nDelivery Partner Assigned: " + partner.getName());
-
-        order.addObserver(partner);
-        order.addObserver(customer);
-
-        simulateDelivery(order);
+        deliveryManager.assignOrder(order);
     }
 
     private void simulateDelivery(Order order) {
@@ -142,7 +129,7 @@ public class CustomerService {
 
     }
 
-    public void printInvoice(Order order) {
+    private void printInvoice(Order order) {
 
         Cart cart = customer.getCart();
 

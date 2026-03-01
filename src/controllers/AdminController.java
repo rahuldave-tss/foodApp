@@ -119,16 +119,22 @@ public class AdminController {
                 System.out.println("\n----------- ADD NEW ITEM -----------");
                 System.out.print("Enter name: ");
                 String name = scanner.nextLine();
-                System.out.print("Enter price: ");
-                double price = validateDouble();
-
-                try {
-                    int id = adminService.addItem(name, price);
-                    System.out.println("\nItem added successfully with ID: " + id);
-                } catch (ItemAlreadyPresentException e) {
+                try{
+                    if(adminService.itemAlreadyPresent(name)){
+                        throw new ItemAlreadyPresentException("Item already present in the menu !!");
+                    }
+                }
+                catch (ItemAlreadyPresentException e){
                     System.out.println("Exception: " + e.getClass().getSimpleName());
                     System.out.println(e.getMessage());
+                    break;
                 }
+
+                System.out.print("Enter price: ");
+                double price = validateDouble();
+                int id = adminService.addItem(name, price);
+                System.out.println("\nItem added successfully with ID: " + id);
+
                 break;
             }
 
@@ -283,7 +289,7 @@ public class AdminController {
                 );
 
                 adminService.addDeliveryPartner(partner);
-                System.out.println("\nPartner added successfully with ID: " + partner.getId());
+
                 break;
             }
 

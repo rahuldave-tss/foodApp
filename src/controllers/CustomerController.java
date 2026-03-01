@@ -104,9 +104,6 @@ public class CustomerController {
     }
 
     private void placeOrder() {
-        System.out.println("Before placing order, First Enter your address: ");
-        String customerAddress=scanner.nextLine();
-        customer.setCustomerAddress(customerAddress);
         customerService.placeOrder();
     }
 

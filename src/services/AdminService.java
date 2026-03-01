@@ -14,22 +14,21 @@ public class AdminService {
     private DPRepo dpRepo;
     private UserRepo userRepo;
     private CustomerRepo customerRepo;
+    private DeliveryManager deliveryManager;
 
     public AdminService(MenuRepo menuRepo,
                         DPRepo dpRepo,
                         UserRepo userRepo,
-                        DiscountRepo discountRepo, CustomerRepo customerRepo) {
+                        DiscountRepo discountRepo, CustomerRepo customerRepo,DeliveryManager deliveryManager) {
         this.menuRepo = menuRepo;
         this.dpRepo = dpRepo;
         this.userRepo = userRepo;
         this.discountRepo = discountRepo;
         this.customerRepo=customerRepo;
+        this.deliveryManager=deliveryManager;
     }
 
     public int addItem(String itemName, double price) {
-        if (itemAlreadyPresent(itemName)) {
-            throw new ItemAlreadyPresentException("Food Item already present in Menu");
-        }
         FoodItem foodItem=new FoodItem(itemName,price);
         menuRepo.addItem(foodItem);
         return foodItem.getId();
@@ -40,6 +39,9 @@ public class AdminService {
             throw new EmptyMenuException("No food items available");
         }
         FoodItem foodItem=menuRepo.getFoodItemById(itemId);
+        if(foodItem==null){
+            return false;
+        }
         menuRepo.removeItem(foodItem);
         return true;
     }
@@ -48,7 +50,7 @@ public class AdminService {
         return menuRepo.getMenu();
     }
 
-    private boolean itemAlreadyPresent(String itemName) {
+    public boolean itemAlreadyPresent(String itemName) {
         return menuRepo.getMenu()
                 .stream()
                 .anyMatch(f -> f.getName().equalsIgnoreCase(itemName));
@@ -84,6 +86,10 @@ public class AdminService {
     public void addDeliveryPartner(User partner) {
         userRepo.addUser(partner);
         dpRepo.addPartner((DeliveryPartner) partner);
+        System.out.println("\nPartner added successfully with ID: " + partner.getId());
+        if(!deliveryManager.getPendingOrders().isEmpty()){
+            deliveryManager.assignNextPendingOrder((DeliveryPartner) partner);
+        }
     }
 
     public void removeDeliveryPartner(int partnerId) {

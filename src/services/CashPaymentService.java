@@ -10,6 +10,6 @@ public class CashPaymentService implements IPaymentService{
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("Cash received successfully.");
+        System.out.println("Cash will be collected on delivery.");
     }
 }

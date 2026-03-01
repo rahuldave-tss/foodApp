@@ -41,12 +41,12 @@ public class UserRepo {
         Admin admin=new Admin(adminUsername,adminPassword, adminEmail,adminPhoneNumber);
         userList.put(1, admin);
         //Adding 2 delivery partners for testing
-        DeliveryPartner dp1=new DeliveryPartner("Jay","jay123", "jay@gmail.com","9876543210");
-        DeliveryPartner dp2=new DeliveryPartner("Munna","munna123", "munna@gmail.com","9876543211");
-        userList.put(dp1.getId(), dp1);
-        userList.put(dp2.getId(), dp2);
-        dpRepo.addPartner(dp1);
-        dpRepo.addPartner(dp2);
+//        DeliveryPartner dp1=new DeliveryPartner("Jay","jay123", "jay@gmail.com","9876543210");
+//        DeliveryPartner dp2=new DeliveryPartner("Munna","munna123", "munna@gmail.com","9876543211");
+//        userList.put(dp1.getId(), dp1);
+//        userList.put(dp2.getId(), dp2);
+//        dpRepo.addPartner(dp1);
+//        dpRepo.addPartner(dp2);
     }
 
     public User getUserById(int id){

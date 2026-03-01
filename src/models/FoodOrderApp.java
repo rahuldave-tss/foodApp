@@ -3,10 +3,12 @@ package models;
 import controllers.AdminController;
 import controllers.CustomerController;
 import controllers.DeliveryPartnerController;
-import exceptions.UserNotFoundException;
+import exceptions.InvalidCredentialsException;
 import factory.UserFactory;
 import repos.*;
 import services.*;
+
+import java.util.LinkedList;
 
 import static utils.GlobalConstants.scanner;
 import static utils.Validate.*;
@@ -19,6 +21,7 @@ public class FoodOrderApp {
     private CustomerRepo customerRepo;
     private DiscountRepo discountRepo;
     private DiscountService discountService;
+    private DeliveryManager deliveryManager;
 
     public FoodOrderApp() {
         this.dpRepo = new DPRepo();
@@ -26,6 +29,8 @@ public class FoodOrderApp {
         this.menuRepo = new MenuRepo();
         this.discountRepo=new DiscountRepo();
         this.customerRepo=new CustomerRepo();
+
+        this.deliveryManager=new DeliveryManager(dpRepo,new LinkedList<>());
 
         this.discountService=new DiscountService(discountRepo);
     }
@@ -56,7 +61,7 @@ public class FoodOrderApp {
                     try{
                         login();
                     }
-                    catch (UserNotFoundException e){
+                    catch (InvalidCredentialsException e){
                         System.out.println("Exception: "+e.getClass().getSimpleName());
                         System.out.println(e.getMessage());
                     }
@@ -84,16 +89,15 @@ public class FoodOrderApp {
 
         User user = userRepo.getUserById(id);
 
-        if (user == null) {
-            throw new UserNotFoundException("User with ID " + id + " not found.");
-        }
-
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
 
+        if (user == null) {
+            throw new InvalidCredentialsException();
+        }
+
         if (!user.getPassword().equals(password)) {
-            System.out.println("Incorrect password!");
-            return;
+            throw new InvalidCredentialsException();
         }
 
         System.out.println("\nLogin Successful!");
@@ -107,19 +111,19 @@ public class FoodOrderApp {
 
         switch (user.getRole()){
             case ADMIN:{
-                AdminController adminController=new AdminController(new AdminService(menuRepo,dpRepo,userRepo,discountRepo,customerRepo));
+                AdminController adminController=new AdminController(new AdminService(menuRepo,dpRepo,userRepo,discountRepo,customerRepo,deliveryManager));
                 System.out.println("Welcome Admin, "+user.getName()+"!");
                 adminController.start();
                 break;
             }
             case CUSTOMER:{
-                CustomerController customerController=new CustomerController(new CustomerService(dpRepo,discountRepo,user,discountService),menuRepo,user);
+                CustomerController customerController=new CustomerController(new CustomerService(dpRepo,discountRepo,user,discountService,deliveryManager),menuRepo,user);
                 System.out.println("Welcome Customer, "+user.getName()+"!");
                 customerController.start();
                 break;
             }
             case DELIVERY_PARTNER:{
-                DeliveryPartnerController deliveryPartnerController=new DeliveryPartnerController(new DeliveryPartnerService(dpRepo,user));
+                DeliveryPartnerController deliveryPartnerController=new DeliveryPartnerController(new DeliveryPartnerService(dpRepo,user,deliveryManager),user);
                 System.out.println("Welcome Delivery Partner, "+user.getName()+"!");
                 deliveryPartnerController.start();
                 break;
@@ -170,9 +174,12 @@ public class FoodOrderApp {
         String customerEmail=validateEmail();
         String customerPhoneNumber=validatePhoneNumber();
 
-        User customer =
-                UserFactory.createUser(Role.CUSTOMER,customerName,customerPassword,customerEmail,customerPhoneNumber);
+        Customer customer =
+                (Customer) UserFactory.createUser(Role.CUSTOMER,customerName,customerPassword,customerEmail,customerPhoneNumber);
 
+        System.out.print("Enter your address: ");
+        String address= scanner.nextLine();
+        customer.setCustomerAddress(address);
         userRepo.addUser(customer);
         customerRepo.addCustomer(customer);
 
