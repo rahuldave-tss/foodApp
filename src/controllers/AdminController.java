@@ -294,14 +294,7 @@ public class AdminController {
             }
 
             case 2: {
-                List<DeliveryPartner> deliveryPartnerList = adminService.getAllDeliveryPartners();
-                if(deliveryPartnerList.isEmpty()){
-                    System.out.println("\nNo delivery partners available !!\n");
-                    return;
-                }
-                System.out.println("\n-------------- DELIVERY PARTNERS ----------------");
-                deliveryPartnerList.forEach(System.out::println);
-                System.out.println("-------------------------------------------------\n");
+                viewAllDeliveryPartners();
                 System.out.print("Enter Delivery Partner ID to remove: ");
                 int partnerId = validateInt();
                 adminService.removeDeliveryPartner(partnerId);

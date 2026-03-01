@@ -5,6 +5,8 @@ import repos.DPRepo;
 import java.util.List;
 import java.util.Queue;
 
+import static services.DeliveryPartnerService.displayOrderHistoryHeader;
+
 public class DeliveryManager {
     private Queue<Order> pendingOrders;
     private DPRepo dpRepo;
@@ -18,6 +20,23 @@ public class DeliveryManager {
         return pendingOrders;
     }
 
+    public void viewCurrentOrder(DeliveryPartner partner){
+        List<Order> orders = dpRepo.getDeliveryPartnerOrders(partner);
+        if(orders.isEmpty()){
+            System.out.println("No current order for: " + partner.getName());
+            return;
+        }
+        Order currentOrder = orders.get(orders.size() - 1);
+
+        if(currentOrder.getStatus() == OrderStatus.DELIVERED){
+            System.out.println("No current order for: " + partner.getName());
+            return;
+        }
+        System.out.println("Your current order: ");
+        System.out.println(displayOrderHistoryHeader());
+        System.out.println(currentOrder.getDeliveryPartnerHistoryRow());
+    }
+
     public void assignOrder(Order order){
         List<DeliveryPartner> partners = dpRepo.getDeliveryPartners();
 
@@ -25,6 +44,9 @@ public class DeliveryManager {
             if (partner.isAvailable()) {
                 partner.setAvailable(false);
                 order.setDeliveryPartner(partner);
+                //observer for notification -- vandha
+                order.addObserver(partner);
+                order.addObserver(order.getCustomer());
                 dpRepo.getDeliveryPartnerOrders(partner).add(order);
 
                 order.setStatus(OrderStatus.ASSIGNED);
@@ -52,6 +74,7 @@ public class DeliveryManager {
             return;
         }
         System.out.println("Your current order: ");
+        System.out.println(displayOrderHistoryHeader());
         System.out.println(currentOrder.getDeliveryPartnerHistoryRow());
 
         currentOrder.setStatus(OrderStatus.DELIVERED);

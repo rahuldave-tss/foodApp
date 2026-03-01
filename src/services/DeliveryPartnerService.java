@@ -24,7 +24,9 @@ public class DeliveryPartnerService {
     public void confirmOrder(DeliveryPartner partner) {
         deliveryManager.completeCurrentOrder(partner);
     }
-
+    public void viewCurrentOrder(DeliveryPartner partner){
+        deliveryManager.viewCurrentOrder(partner);
+    }
 
     public void showOrderHistory(){
         List<Order> orders = dpRepo.getDeliveryPartnerOrders(deliveryPartner);

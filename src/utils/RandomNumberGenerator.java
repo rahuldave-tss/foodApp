@@ -11,7 +11,7 @@ public class RandomNumberGenerator {
     public static int generateRandomNumber() {
         Random random=new Random();
         while(true){
-            int randomNumber=random.nextInt(randomNumberCapacity);
+            int randomNumber=random.nextInt(2,randomNumberCapacity);
             if(!generatedNumbers.contains(randomNumber)){
                 generatedNumbers.add(randomNumber);
                 return randomNumber;

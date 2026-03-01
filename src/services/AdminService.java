@@ -98,6 +98,13 @@ public class AdminService {
             System.out.println("No such partner found !!");
             return;
         }
+        //if removed, all his active orders will be set to pending and added back to pending queue
+        List<Order> orders = dpRepo.getDeliveryPartnerOrders(partner);
+        for(Order o : orders){
+            o.setDeliveryPartner(null);
+            o.setStatus(OrderStatus.PENDING);
+            deliveryManager.getPendingOrders().add(o);
+        }
 
         userRepo.removeUser(partner.getId());
         dpRepo.removePartner(partner);
