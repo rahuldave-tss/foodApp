@@ -30,15 +30,32 @@ public class CustomerService {
 
     public void placeOrder(){
         Order order=createNewOrderFromCart();
+        if(order.getFinalAmount()==0){
+            System.out.println("Your cart is empty. Please add items to cart before placing an order.");
+            return;
+        }
         takePaymentFromCustomer(order);
-        assignDeliveryPartner(order);
-        printInvoice(order);
+        try{
+            assignDeliveryPartner(order);
+        }
+        catch(NoDeliveryPartnerAvailableException e){
+            System.out.println("Exception: "+e.getClass().getSimpleName());
+            System.out.println(e.getMessage());
+        }
+        try{
+            printInvoice(order);
+        }
+        catch(EmptyCartException e) {
+            System.out.println("Exception: " + e.getClass().getSimpleName());
+            System.out.println(e.getMessage());
+        }
+        customer.addOrderToHistory(new Order(order));
         customer.getCart().clear();
     }
 
     private void takePaymentFromCustomer(Order order) {
         System.out.println();
-        System.out.print("Which type of Payment you want to opt?: ");
+        System.out.println("Which type of Payment you want to opt?: ");
         System.out.println("1. Cash");
         System.out.println("2. UPI");
         IPaymentService iPaymentService=null;
@@ -86,7 +103,7 @@ public class CustomerService {
 
         order.setDeliveryPartner(partner);
 
-        dpRepo.getDeliveryPartnerOrders(partner).add(order);
+        dpRepo.getDeliveryPartnerOrders(partner).add(new Order(order));
 
         System.out.println("\nDelivery Partner Assigned: " + partner.getName());
 

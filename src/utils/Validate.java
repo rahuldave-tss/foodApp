@@ -5,6 +5,25 @@ import static utils.GlobalConstants.scanner;
 
 public class Validate {
 
+    public static double validatePercentage() {
+        double percentage;
+        while (true) {
+            System.out.print("Enter percentage (0-100): ");
+            if (scanner.hasNextDouble()) {
+                percentage = scanner.nextDouble();
+                if (percentage >= 0 && percentage <= 100) {
+                    scanner.nextLine();
+                    return percentage;
+                } else {
+                    System.out.println("Percentage must be between 0 and 100. Please try again.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+    }
+
     public static String validateEmail() {
 
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
@@ -39,7 +58,7 @@ public class Validate {
             if (pattern.matcher(phone).matches()) {
                 break;
             } else {
-                System.out.println("Invalid phone number. Please enter exactly 10 digits.");
+                System.out.println("Invalid phone number. Please enter exactly 10 digits and start with [6-9]");
             }
         }
 

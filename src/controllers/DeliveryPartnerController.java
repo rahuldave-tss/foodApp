@@ -21,7 +21,7 @@ public class DeliveryPartnerController {
             System.out.println("------------------------------------------------");
             System.out.println("  1. Show Order History");
             System.out.println("  2. Show Total Earnings");
-            System.out.println("  3. Back to Main Menu");
+            System.out.println("  3. Logout");
             System.out.println("------------------------------------------------");
             System.out.print(" Enter your choice (1-3): ");
 
@@ -41,13 +41,13 @@ public class DeliveryPartnerController {
                 }
 
                 case 3:{
-                    System.out.println(" Returning to Main Menu...");
+                    System.out.println("Logging out...");
                     System.out.println("================================================\n");
                     return;
                 }
 
                 default:{
-                    System.out.println(" Invalid choice! Please enter a number between 1 and 3.");
+                    System.out.println("Invalid choice! Please enter a number between 1 and 3.");
                 }
             }
         }

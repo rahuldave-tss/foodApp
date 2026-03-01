@@ -19,12 +19,6 @@ public class FoodOrderApp {
     private CustomerRepo customerRepo;
     private DiscountRepo discountRepo;
     private DiscountService discountService;
-    private AdminController adminController;
-    private CustomerController customerController;
-    private DeliveryPartnerController deliveryPartnerController;
-    private AdminService adminService;
-    private CustomerService customerService;
-    private DeliveryPartnerService deliveryPartnerService;
 
     public FoodOrderApp() {
         this.userRepo = new UserRepo();
@@ -63,7 +57,7 @@ public class FoodOrderApp {
                         login();
                     }
                     catch (UserNotFoundException e){
-                        System.out.println(e.getClass().getSimpleName());
+                        System.out.println("Exception: "+e.getClass().getSimpleName());
                         System.out.println(e.getMessage());
                     }
                     break;
@@ -102,7 +96,7 @@ public class FoodOrderApp {
             return;
         }
 
-        System.out.println("\n Login Successful!");
+        System.out.println("\nLogin Successful!");
         System.out.println("------------------------------------------------");
 
         redirectUser(user);
@@ -114,16 +108,19 @@ public class FoodOrderApp {
         switch (user.getRole()){
             case ADMIN:{
                 AdminController adminController=new AdminController(new AdminService(menuRepo,dpRepo,userRepo,discountRepo,customerRepo));
+                System.out.println("Welcome Admin, "+user.getName()+"!");
                 adminController.start();
                 break;
             }
             case CUSTOMER:{
                 CustomerController customerController=new CustomerController(new CustomerService(dpRepo,discountRepo,user,discountService),menuRepo,user);
+                System.out.println("Welcome Customer, "+user.getName()+"!");
                 customerController.start();
                 break;
             }
             case DELIVERY_PARTNER:{
                 DeliveryPartnerController deliveryPartnerController=new DeliveryPartnerController(new DeliveryPartnerService(dpRepo,user));
+                System.out.println("Welcome Delivery Partner, "+user.getName()+"!");
                 deliveryPartnerController.start();
                 break;
             }

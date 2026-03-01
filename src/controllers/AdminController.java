@@ -4,7 +4,6 @@ import exceptions.*;
 import factory.UserFactory;
 import models.*;
 import services.AdminService;
-import utils.Validate;
 
 import java.util.List;
 
@@ -37,32 +36,70 @@ public class AdminController {
             int choice = validateInt();
 
             switch (choice) {
-                case 1 -> manageMenu();
-                case 2 -> manageDiscounts();
-                case 3 -> manageDeliveryPartners();
-                case 4 -> viewAllCustomers();
-                case 5 -> viewAllDeliveryPartners();
-                case 6 -> {
+                case 1 :{
+                    manageMenu();
+                    break;
+                }
+                case 2 :{
+                    manageDiscounts();
+                    break;
+                }
+                case 3 :{
+                    manageDeliveryPartners();
+                    break;
+                }
+                case 4 :{
+                    viewAllCustomers();
+                    break;
+                }
+                case 5 :{
+                    viewAllDeliveryPartners();
+                    break;
+                }
+                case 6 : {
                     System.out.println("\nLogging out...");
                     return;
                 }
-                default -> System.out.println("Invalid choice !!");
+                default : System.out.println("Invalid choice !!");
             }
         }
     }
 
     private void viewAllDeliveryPartners() {
-        System.out.println("\n-------------- DELIVERY PARTNERS ----------------");
         List<DeliveryPartner> deliveryPartnerList = adminService.getAllDeliveryPartners();
+        if(deliveryPartnerList.isEmpty()){
+            System.out.println("\nNo delivery partners available !!\n");
+            return;
+        }
+        System.out.println("\n-------------- DELIVERY PARTNERS ----------------");
+        System.out.println(deliveryPartnerHeader());
         deliveryPartnerList.forEach(System.out::println);
         System.out.println("-------------------------------------------------\n");
     }
 
+    private String deliveryPartnerHeader() {
+        return "+----+----------------+----------------+----------------------+--------------+-------------------+------------+\n" +
+                "| ID | Name           | Password       | Email                | Phone Number | Role              | Available  |\n" +
+                "+----+----------------+----------------+----------------------+--------------+-------------------+------------+";
+
+    }
+
     private void viewAllCustomers() {
-        System.out.println("\n------------------- CUSTOMERS -------------------");
         List<Customer> customerList = adminService.getAllCustomers();
+        if(customerList.isEmpty()){
+            System.out.println("\nNo customers available !!\n");
+            return;
+        }
+        System.out.println("\n------------------- CUSTOMERS -------------------");
+        System.out.println(customerHeader());
         customerList.forEach(System.out::println);
         System.out.println("-------------------------------------------------\n");
+    }
+
+    public static String customerHeader() {
+        return "+----+----------------+----------------+----------------------+--------------+----------+----------------------+\n" +
+                "| ID | Name           | Password       | Email                | Phone Number | Role     | Address              |\n" +
+                "+----+----------------+----------------+----------------------+--------------+----------+----------------------+";
     }
 
     private void manageMenu() {
@@ -89,7 +126,7 @@ public class AdminController {
                     int id = adminService.addItem(name, price);
                     System.out.println("\nItem added successfully with ID: " + id);
                 } catch (ItemAlreadyPresentException e) {
-                    System.out.println("\n" + e.getClass().getSimpleName());
+                    System.out.println("Exception: " + e.getClass().getSimpleName());
                     System.out.println(e.getMessage());
                 }
                 break;
@@ -103,7 +140,7 @@ public class AdminController {
                     boolean removed = adminService.removeItem(id);
                     System.out.println(removed ? "\nItem removed successfully." : "\nItem not found.");
                 } catch (EmptyMenuException e) {
-                    System.out.println("\nException: " + e.getClass().getSimpleName());
+                    System.out.println("Exception: " + e.getClass().getSimpleName());
                     System.out.println(e.getMessage());
                 }
                 break;
@@ -120,8 +157,12 @@ public class AdminController {
     }
 
     private void viewAllItems() {
-        System.out.println("\n------------------- MENU ITEMS -------------------");
         List<FoodItem> items = adminService.getAllItems();
+        if(items.isEmpty()){
+            System.out.println("\nNo items available in the menu !!\n");
+            return;
+        }
+        System.out.println("\n------------------- MENU ITEMS -------------------");
         items.forEach(i ->
                 System.out.printf("ID: %-5d Name: %-20s Price: %.2f%n",
                         i.getId(), i.getName(), i.getPrice()));
@@ -151,8 +192,7 @@ public class AdminController {
                 System.out.print("Enter amount: ");
                 double amount = validateDouble();
 
-                System.out.print("Enter percentage: ");
-                double percentage = validateDouble();
+                double percentage = validatePercentage();
 
                 DiscountStrategy discount =
                         new AmountDiscount("Amount Discount", amount, percentage);
@@ -180,11 +220,9 @@ public class AdminController {
                 System.out.print("Enter Discount ID to update: ");
                 int discountId = validateInt();
 
-                System.out.print("Enter new discount percentage: ");
-                double newPercentage = validateDouble();
+                double newPercentage = validatePercentage();
 
                 adminService.updateDiscount(discountId, newPercentage);
-                System.out.println("\nDiscount updated successfully !!");
                 break;
             }
 
@@ -194,9 +232,13 @@ public class AdminController {
     }
 
     private void viewAllDiscounts() {
+        List<DiscountStrategy> discounts = adminService.getAllDiscounts();
+        if(discounts.isEmpty()){
+            System.out.println("\nNo discounts available !!\n");
+            return;
+        }
         System.out.println("\n---------------- DISCOUNT LIST ----------------");
-        adminService.getAllDiscounts()
-                .forEach(d ->
+        discounts.forEach(d ->
                         System.out.printf("ID: %-5d Amount: %-10.2f Percentage: %.2f%%%n",
                                 d.getDiscountId(),
                                 d.getAmount(),
@@ -242,7 +284,14 @@ public class AdminController {
             }
 
             case 2: {
-                viewAllDeliveryPartners();
+                List<DeliveryPartner> deliveryPartnerList = adminService.getAllDeliveryPartners();
+                if(deliveryPartnerList.isEmpty()){
+                    System.out.println("\nNo delivery partners available !!\n");
+                    return;
+                }
+                System.out.println("\n-------------- DELIVERY PARTNERS ----------------");
+                deliveryPartnerList.forEach(System.out::println);
+                System.out.println("-------------------------------------------------\n");
                 System.out.print("Enter Delivery Partner ID to remove: ");
                 int partnerId = validateInt();
                 adminService.removeDeliveryPartner(partnerId);

@@ -24,6 +24,22 @@ public class Order implements Subject {
         this.finalAmount=finalAmount;
         this.customer=customer;
     }
+    public Order(Order order) {
+        this.orderId = order.getOrderId();
+        this.status = order.getStatus();
+        this.items = new HashMap<>(order.getItems());
+        this.finalAmount = order.getFinalAmount();
+        this.customer = order.getCustomer();
+        this.deliveryPartner = order.getDeliveryPartner();
+    }
+
+    public Map<FoodItem, OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(Map<FoodItem, OrderItem> items) {
+        this.items = items;
+    }
 
     public Customer getCustomer() {
         return customer;
@@ -45,7 +61,7 @@ public class Order implements Subject {
         this.finalAmount = finalAmount;
     }
 
-    public User getDeliveryPartner() {
+    public DeliveryPartner getDeliveryPartner() {
         return deliveryPartner;
     }
 
@@ -59,6 +75,29 @@ public class Order implements Subject {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    private String getItemsSummary() {
+        if (items == null || items.isEmpty()) {
+            return "No Items";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Map.Entry<FoodItem, OrderItem> entry : items.entrySet()) {
+
+            FoodItem food = entry.getKey();
+            OrderItem orderItem = entry.getValue();
+
+            sb.append(food.getName())
+                    .append(" x")
+                    .append(orderItem.getQuantity())
+                    .append(", ");
+        }
+
+        sb.setLength(sb.length() - 2);
+
+        return sb.toString();
     }
 
 
@@ -79,25 +118,25 @@ public class Order implements Subject {
         }
     }
 
-    @Override
-    public String toString() {
+    public String getDeliveryPartnerHistoryRow() {
         return String.format(
-                "==============================\n" +
-                        "            ORDER DETAILS\n" +
-                        "==============================\n" +
-                        "Order ID        : %d\n" +
-                        "Final Amount    : %.2f\n" +
-                        "Delivery Partner: %s\n" +
-                        "Status          : %s\n" +
-                        "Customer        : %s\n" +
-                        "Items           : %s\n" +
-                        "==============================",
+                "| %-8d | %-12.2f | %-15s | %-18s | %-30s |",
                 orderId,
                 finalAmount,
-                deliveryPartner,
                 status,
-                customer,
-                items
+                customer != null ? customer.getName() : "Unknown",
+                getItemsSummary()
+        );
+    }
+
+    public String getCustomerHistoryRow() {
+        return String.format(
+                "| %-8d | %-12.2f | %-15s | %-18s | %-30s |",
+                orderId,
+                finalAmount,
+                status,
+                deliveryPartner != null ? deliveryPartner.getName() : "Not Assigned",
+                getItemsSummary()
         );
     }
 }

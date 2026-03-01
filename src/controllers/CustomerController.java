@@ -8,6 +8,7 @@ import repos.MenuRepo;
 import services.CustomerService;
 import utils.Display;
 
+import java.util.List;
 import java.util.Map;
 
 import static utils.GlobalConstants.scanner;
@@ -37,7 +38,7 @@ public class CustomerController {
             System.out.println("  3. View Cart Summary");
             System.out.println("  4. Place Order");
             System.out.println("  5. View Order History");
-            System.out.println("  6. Back to Main Menu");
+            System.out.println("  6. Logout");
             System.out.println("------------------------------------------------");
             System.out.print(" Enter your choice (1-6): ");
 
@@ -72,20 +73,34 @@ public class CustomerController {
                 }
 
                 case 6:{
-                    System.out.println(" Returning to Main Menu...");
+                    System.out.println("Logging out...");
                     System.out.println("================================================\n");
                     return;
                 }
 
                 default:{
-                    System.out.println(" Invalid choice! Please enter a number between 1 and 6.");
+                    System.out.println("Invalid choice! Please enter a number between 1 and 6.");
                 }
             }
         }
     }
 
     private void viewOrderHistory() {
-        customer.getOrderHistory().forEach(System.out::println);
+        List<Order> orderHistory=customer.getOrderHistory();
+        if(orderHistory.isEmpty()){
+            System.out.println("No orders placed yet.");
+            return;
+        }
+        System.out.println(displayOrderHistoryHeader());
+        for(Order o : orderHistory){
+            System.out.println(o.getCustomerHistoryRow());
+        }
+    }
+
+    public static String displayOrderHistoryHeader() {
+        return "+----------+--------------+-----------------+--------------------+--------------------------------+\n" +
+                "| Order ID | Final Amount | Status          | Delivery Partner   | Items                          |\n" +
+                "+----------+--------------+-----------------+--------------------+--------------------------------+";
     }
 
     private void placeOrder() {
@@ -96,13 +111,26 @@ public class CustomerController {
     }
 
     private void viewCartSummary() {
-        customer.getCart().displayCart();
+        try{
+            customer.getCart().displayCart();
+        }
+        catch(EmptyCartException e){
+            System.out.println("Exception: "+e.getClass().getSimpleName());
+            System.out.println(e.getMessage());
+        }
     }
 
     private void removeItemsFromCart() {
         Map<FoodItem, OrderItem> currentCart = customer.getCart().getShoppingCart();
 
-        customer.getCart().displayCart();
+        try{
+            customer.getCart().displayCart();
+        }
+        catch(EmptyCartException e){
+            System.out.println("Exception: "+e.getClass().getSimpleName());
+            System.out.println(e.getMessage());
+            return;
+        }
 
         System.out.print("Enter the FoodItem ID to remove: ");
         int id = validateInt();

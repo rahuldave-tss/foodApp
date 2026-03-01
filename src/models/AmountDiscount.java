@@ -23,6 +23,10 @@ public class AmountDiscount implements DiscountStrategy {
         return id;
     }
 
+    public String getDiscountName() {
+        return discountName;
+    }
+
     public double getAmount() {
         return amount;
     }
@@ -33,10 +37,6 @@ public class AmountDiscount implements DiscountStrategy {
 
     public void setDiscountPercentage(double discountPercentage) {
         this.discountPercentage = discountPercentage;
-    }
-
-    public double applyDiscount(){
-        return Math.max(0,amount-(amount*discountPercentage)/100);
     }
 
     @Override

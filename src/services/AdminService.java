@@ -9,10 +9,10 @@ import java.util.List;
 
 public class AdminService {
 
-    private final MenuRepo menuRepo;
-    private final DiscountRepo discountRepo;
-    private final DPRepo dpRepo;
-    private final UserRepo userRepo;
+    private MenuRepo menuRepo;
+    private DiscountRepo discountRepo;
+    private DPRepo dpRepo;
+    private UserRepo userRepo;
     private CustomerRepo customerRepo;
 
     public AdminService(MenuRepo menuRepo,
@@ -70,6 +70,7 @@ public class AdminService {
             return;
         }
         discount.setDiscountPercentage(newPercentage);
+        System.out.println("\nDiscount updated successfully !!");
     }
 
     public List<DiscountStrategy> getAllDiscounts() {

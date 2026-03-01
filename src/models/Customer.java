@@ -22,6 +22,10 @@ public class Customer extends User{
         return orderHistory;
     }
 
+    public void addOrderToHistory(Order order){
+        orderHistory.add(order);
+    }
+
     public void setCustomerAddress(String customerAddress) {
         this.customerAddress = customerAddress;
     }
@@ -33,11 +37,7 @@ public class Customer extends User{
     @Override
     public String toString() {
         return String.format(
-                "+----+----------------+----------------+----------------------+--------------+----------+----------------------+\n" +
-                        "| ID | Name           | Password       | Email                | Phone Number | Role     | Address              |\n" +
-                        "+----+----------------+----------------+----------------------+--------------+----------+----------------------+\n" +
-                        "| %-2d | %-14s | %-14s | %-20s | %-12s | %-8s | %-20s |\n" +
-                        "+----+----------------+----------------+----------------------+--------------+----------+----------------------+",
+                "| %-2d | %-14s | %-14s | %-20s | %-12s | %-8s | %-20s |",
                 getId(),
                 getName(),
                 getPassword(),
