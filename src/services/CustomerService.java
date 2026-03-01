@@ -18,7 +18,6 @@ public class CustomerService {
     private DPRepo dpRepo;
     private Customer customer;
     private DiscountRepo discountRepo;
-    private IPaymentService paymentService;
     private DiscountService discountService;
 
     public CustomerService(DPRepo dpRepo,DiscountRepo discountRepo,User customer,DiscountService discountService) {
@@ -107,27 +106,32 @@ public class CustomerService {
 
         System.out.println("\nDelivery Partner Assigned: " + partner.getName());
 
+        order.addObserver(partner);
+        order.addObserver(customer);
+
         simulateDelivery(order);
     }
 
     private void simulateDelivery(Order order) {
 
         try{
-            System.out.println("Food is being prepared...");
             Thread.sleep(2000);
 
             order.setStatus(OrderStatus.PREPARING);
-            System.out.println("Status: " + order.getStatus());
+            order.notifyObservers();
+            System.out.println();
 
             Thread.sleep(2000);
 
             order.setStatus(OrderStatus.ON_THE_WAY);
-            System.out.println("Status: " + order.getStatus());
+            order.notifyObservers();
+            System.out.println();
 
             Thread.sleep(2000);
 
             order.setStatus(OrderStatus.DELIVERED);
-            System.out.println("Status: " + order.getStatus());
+            order.notifyObservers();
+            System.out.println();
 
             System.out.println("Order Delivered Successfully !!");
         }
@@ -196,38 +200,6 @@ public class CustomerService {
         System.out.println("==================================================================");
         System.out.println("              Thank You For Ordering With Us !!");
         System.out.println("==================================================================\n");
-    }
-
-    public void viewOrderHistory() {
-
-        List<Order> history = customer.getOrderHistory();
-
-        if (history == null || history.isEmpty()) {
-            throw new NoOrdersFoundException();
-        }
-
-        System.out.println("\n================ ORDER HISTORY ================");
-
-        int index = 1;
-
-        for (Order order : history) {
-
-            System.out.println("\n------------------------------------------------");
-            System.out.println("Order #" + index++);
-            System.out.println("Order ID       : " + order.getOrderId());
-            System.out.println("Order Status   : " + order.getStatus());
-            System.out.println("Delivered By   : " +
-                    (order.getDeliveryPartner() != null
-                            ? order.getDeliveryPartner().getName()
-                            : "Not Assigned"));
-
-            double total = order.getFinalAmount();
-            System.out.println("Total Amount   : " + total);
-
-            System.out.println("------------------------------------------------");
-        }
-
-        System.out.println("================================================\n");
     }
 
 }

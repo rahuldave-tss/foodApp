@@ -22,7 +22,7 @@ public class DPRepo {
         return new ArrayList<>(deliveryPartners.keySet());
     }
 
-    public List<Order> getDeliveryPartnerOrders(User deliveryPartner){
+    public List<Order> getDeliveryPartnerOrders(DeliveryPartner deliveryPartner){
         return deliveryPartners.get(deliveryPartner);
     }
 

@@ -21,8 +21,8 @@ public class FoodOrderApp {
     private DiscountService discountService;
 
     public FoodOrderApp() {
-        this.userRepo = new UserRepo();
         this.dpRepo = new DPRepo();
+        this.userRepo = new UserRepo(dpRepo);
         this.menuRepo = new MenuRepo();
         this.discountRepo=new DiscountRepo();
         this.customerRepo=new CustomerRepo();
@@ -34,7 +34,7 @@ public class FoodOrderApp {
 
         while (true) {
             System.out.println("\n================================================");
-            System.out.println("              WELCOME TO FOOD ORDER APP        ");
+            System.out.println("            WELCOME TO FOOD ORDER APP        ");
             System.out.println("================================================");
             System.out.println(" Please choose an option:");
             System.out.println("------------------------------------------------");

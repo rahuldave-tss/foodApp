@@ -4,6 +4,7 @@ import notifications.Observer;
 import notifications.Subject;
 import utils.RandomNumberGenerator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ public class Order implements Subject {
     private OrderStatus status;
     private Customer customer;
     private Map<FoodItem,OrderItem> items;
-    private List<Observer> observerList;
+    private List<Observer> observerList=new ArrayList<>();
 
     public Order(Map<FoodItem,OrderItem> items,double finalAmount,Customer customer) {
         this.orderId = RandomNumberGenerator.generateRandomNumber();
@@ -112,9 +113,9 @@ public class Order implements Subject {
     }
 
     @Override
-    public void notifyObservers(String message) {
+    public void notifyObservers() {
         for(Observer observer : observerList) {
-            observer.update(message);
+            observer.update(this);
         }
     }
 

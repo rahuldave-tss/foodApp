@@ -1,6 +1,8 @@
 package models;
 
-public class DeliveryPartner extends User{
+import notifications.Observer;
+
+public class DeliveryPartner extends User implements Observer {
     private boolean isAvailable;
 
     public DeliveryPartner(String name, String password, String email, String phoneNumber) {
@@ -28,5 +30,10 @@ public class DeliveryPartner extends User{
                 getRole(),
                 isAvailable
         );
+    }
+
+    @Override
+    public void update(Order order) {
+        System.out.println("Delivery Partner Notification: Order " + order.getOrderId() + " status changed to " + order.getStatus());
     }
 }

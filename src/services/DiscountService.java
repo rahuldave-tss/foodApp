@@ -17,7 +17,7 @@ public class DiscountService {
         List<DiscountStrategy> availableDiscounts=discountRepo.getAvailableDiscounts();
         for(DiscountStrategy discount:availableDiscounts){
             if(cartTotal>=discount.getAmount()){
-                maxDiscount=Math.max(maxDiscount,cartTotal*discount.getDiscountPercentage()/100);
+                maxDiscount=Math.max(maxDiscount,discount.applyDiscount(cartTotal));
             }
         }
         return maxDiscount;

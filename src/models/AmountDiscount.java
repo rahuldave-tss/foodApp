@@ -19,6 +19,11 @@ public class AmountDiscount implements DiscountStrategy {
         return id;
     }
 
+    @Override
+    public double applyDiscount(double amount) {
+        return Math.max(0, amount*this.discountPercentage/100);
+    }
+
     public int getDiscountId() {
         return id;
     }

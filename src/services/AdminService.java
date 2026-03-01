@@ -73,6 +73,10 @@ public class AdminService {
         System.out.println("\nDiscount updated successfully !!");
     }
 
+    public boolean findDiscountByAmount(double amount){
+        return discountRepo.findDiscountByAmount(amount);
+    }
+
     public List<DiscountStrategy> getAllDiscounts() {
         return discountRepo.getAvailableDiscounts();
     }

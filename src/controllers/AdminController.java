@@ -191,6 +191,10 @@ public class AdminController {
                 System.out.println("\n----------- ADD DISCOUNT -----------");
                 System.out.print("Enter amount: ");
                 double amount = validateDouble();
+                if(adminService.findDiscountByAmount(amount)){
+                    System.out.println("\nDiscount already present for this amount !!");
+                    break;
+                }
 
                 double percentage = validatePercentage();
 

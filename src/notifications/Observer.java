@@ -1,5 +1,7 @@
 package notifications;
 
+import models.Order;
+
 public interface Observer {
-    void update(String message);
+    void update(Order order);
 }

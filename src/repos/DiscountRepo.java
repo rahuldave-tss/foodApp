@@ -23,6 +23,18 @@ public class DiscountRepo {
         this.availableDiscounts = availableDiscounts;
     }
 
+    public boolean findDiscountByAmount(double amount){
+        for(DiscountStrategy discount:availableDiscounts){
+            if(discount instanceof AmountDiscount){
+                AmountDiscount amountDiscount=(AmountDiscount) discount;
+                if(amountDiscount.getAmount()==amount){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void addDiscount(DiscountStrategy discount){
         availableDiscounts.add(discount);
     }

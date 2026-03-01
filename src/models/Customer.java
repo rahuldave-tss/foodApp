@@ -1,9 +1,11 @@
 package models;
 
+import notifications.Observer;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Customer extends User{
+public class Customer extends User implements Observer {
     private String customerAddress;
     private Cart cart;
     private List<Order> orderHistory;
@@ -49,4 +51,8 @@ public class Customer extends User{
     }
 
 
+    @Override
+    public void update(Order order) {
+        System.out.println("Customer Notification: Order " + order.getOrderId() + " is now " + order.getStatus());
+    }
 }
