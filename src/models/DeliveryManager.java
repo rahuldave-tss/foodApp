@@ -44,9 +44,8 @@ public class DeliveryManager {
             if (partner.isAvailable()) {
                 partner.setAvailable(false);
                 order.setDeliveryPartner(partner);
-                //observer for notification -- vandha
+                //observer for notification - partner
                 order.addObserver(partner);
-                order.addObserver(order.getCustomer());
                 dpRepo.getDeliveryPartnerOrders(partner).add(order);
 
                 order.setStatus(OrderStatus.ASSIGNED);
@@ -88,6 +87,8 @@ public class DeliveryManager {
     public void assignNextPendingOrder(DeliveryPartner partner) {
         if (!pendingOrders.isEmpty()) {
             Order nextOrder = pendingOrders.poll();
+            //partner bcz added later
+            nextOrder.addObserver(partner);
             partner.setAvailable(false);
             nextOrder.setDeliveryPartner(partner);
 

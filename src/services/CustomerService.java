@@ -96,6 +96,7 @@ public class CustomerService {
     }
 
     public void assignDeliveryPartner(Order order) {
+        order.addObserver(customer);
         deliveryManager.assignOrder(order);
     }
 
