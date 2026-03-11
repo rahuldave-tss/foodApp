@@ -10,6 +10,7 @@ public class UserFactory {
     private UserFactory() {} // prevent instantiation
 
     public static User createUser(Role role,
+                                  String userName,
                                   String name,
                                   String password,
                                   String email,
@@ -17,13 +18,13 @@ public class UserFactory {
 
         switch (role) {
             case ADMIN:
-                return new Admin(name, password, email, phoneNumber);
+                return new Admin(userName,name, password, email, phoneNumber);
 
             case CUSTOMER:
-                return new Customer(name, password, email, phoneNumber);
+                return new Customer(userName,name, password, email, phoneNumber);
 
             case DELIVERY_PARTNER:
-                return new DeliveryPartner(name, password, email, phoneNumber);
+                return new DeliveryPartner(userName,name, password, email, phoneNumber);
 
             default:
                 throw new IllegalArgumentException("Unknown role: " + role);

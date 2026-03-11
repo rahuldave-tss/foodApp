@@ -5,8 +5,8 @@ import notifications.Observer;
 public class DeliveryPartner extends User implements Observer {
     private boolean isAvailable;
 
-    public DeliveryPartner(String name, String password, String email, String phoneNumber) {
-        super(name, password, email, phoneNumber,Role.DELIVERY_PARTNER);
+    public DeliveryPartner(String userName,String name, String password, String email, String phoneNumber) {
+        super(userName,name, password, email, phoneNumber,Role.DELIVERY_PARTNER);
         this.isAvailable=true;
     }
 
@@ -21,8 +21,9 @@ public class DeliveryPartner extends User implements Observer {
     @Override
     public String toString() {
         return String.format(
-                "| %-2d | %-14s | %-14s | %-20s | %-12s | %-17s | %-10s |",
+                "| %-2d | %-14s | %-14s | %-14s | %-20s | %-12s | %-17s | %-10s |",
                 getId(),
+                getUserName(),
                 getName(),
                 getPassword(),
                 getEmail(),

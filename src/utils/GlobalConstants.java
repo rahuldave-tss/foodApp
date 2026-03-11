@@ -5,7 +5,8 @@ import java.util.Scanner;
 public class GlobalConstants {
     public static final Scanner scanner=new Scanner(System.in);
     public static final int randomNumberCapacity=1000;
-    public static final String adminUsername="Rahul";
+    public static final String adminUsername="rahul123";
+    public static final String adminName="Rahul";
     public static final String adminPassword="admin123";
     public static final String adminEmail="admin@gmail.com";
     public static final String adminPhoneNumber="9429440193";

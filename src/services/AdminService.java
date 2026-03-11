@@ -108,7 +108,7 @@ public class AdminService {
             deliveryManager.getPendingOrders().add(o);
         }
 
-        userRepo.removeUser(partner.getId());
+        userRepo.removeUser(partner.getUserName());
         dpRepo.removePartner(partner);
         System.out.println("Delivery Partner removed successfully !!");
     }

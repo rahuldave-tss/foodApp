@@ -78,10 +78,9 @@ public class AdminController {
     }
 
     private String deliveryPartnerHeader() {
-        return "+----+----------------+----------------+----------------------+--------------+-------------------+------------+\n" +
-                "| ID | Name           | Password       | Email                | Phone Number | Role              | Available  |\n" +
-                "+----+----------------+----------------+----------------------+--------------+-------------------+------------+";
-
+        return "+----+----------------+----------------+----------------+----------------------+--------------+-------------------+------------+\n" +
+                "| ID | UserName       | Name           | Password       | Email                | Phone Number | Role              | Available  |\n" +
+                "+----+----------------+----------------+----------------+----------------------+--------------+-------------------+------------+";
     }
 
     private void viewAllCustomers() {
@@ -97,9 +96,9 @@ public class AdminController {
     }
 
     public static String customerHeader() {
-        return "+----+----------------+----------------+----------------------+--------------+----------+----------------------+\n" +
-                "| ID | Name           | Password       | Email                | Phone Number | Role     | Address              |\n" +
-                "+----+----------------+----------------+----------------------+--------------+----------+----------------------+";
+        return "+----+----------------+----------------+----------------+----------------------+--------------+----------+----------------------+\n" +
+                "| ID | UserName       | Name           | Password       | Email                | Phone Number | Role     | Address              |\n" +
+                "+----+----------------+----------------+----------------+----------------------+--------------+----------+----------------------+";
     }
 
     private void manageMenu() {
@@ -272,6 +271,9 @@ public class AdminController {
                 System.out.print("Enter name: ");
                 String name = validateString();
 
+                System.out.print("Enter userName: ");
+                String userName= scanner.nextLine();
+
                 System.out.print("Enter password: ");
                 String password = scanner.nextLine();
 
@@ -280,6 +282,7 @@ public class AdminController {
 
                 User partner = UserFactory.createUser(
                         Role.DELIVERY_PARTNER,
+                        userName,
                         name,
                         password,
                         email,
@@ -293,6 +296,9 @@ public class AdminController {
 
             case 2: {
                 viewAllDeliveryPartners();
+                if(adminService.getAllDeliveryPartners().isEmpty()){
+                    break;
+                }
                 System.out.print("Enter Delivery Partner ID to remove: ");
                 int partnerId = validateInt();
                 adminService.removeDeliveryPartner(partnerId);

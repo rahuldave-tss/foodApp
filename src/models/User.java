@@ -4,19 +4,24 @@ import utils.RandomNumberGenerator;
 
 public abstract class User {
     private int id;
+    private String userName;
     private String name;
     private String password;
     private String email;
     private String phoneNumber;
     private Role role;
 
-    public User(String name, String password,String email,String phoneNumber,Role role) {
-        this.id = RandomNumberGenerator.generateRandomNumber();
+    public User(String userName,String name, String password,String email,String phoneNumber,Role role) {
+        this.userName=userName;
         this.name = name;
         this.password = password;
         this.email=email;
         this.phoneNumber=phoneNumber;
         this.role=role;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     public String getName() {

@@ -84,10 +84,10 @@ public class FoodOrderApp {
         System.out.println("                     LOGIN                      ");
         System.out.println("================================================");
 
-        System.out.print("Enter ID: ");
-        int id = validateInt();
+        System.out.print("Enter UserName: ");
+        String userName = scanner.nextLine();
 
-        User user = userRepo.getUserById(id);
+        User user = userRepo.getUserByUserName(userName);
 
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
@@ -170,12 +170,13 @@ public class FoodOrderApp {
         System.out.println("------------------------------------------------");
 
         String customerName = inputName();
+        String customerUserName= inputUserName();
         String customerPassword = inputPassword();
         String customerEmail=validateEmail();
         String customerPhoneNumber=validatePhoneNumber();
 
         Customer customer =
-                (Customer) UserFactory.createUser(Role.CUSTOMER,customerName,customerPassword,customerEmail,customerPhoneNumber);
+                (Customer) UserFactory.createUser(Role.CUSTOMER,customerUserName,customerName,customerPassword,customerEmail,customerPhoneNumber);
 
         System.out.print("Enter your address: ");
         String address= scanner.nextLine();
@@ -186,6 +187,11 @@ public class FoodOrderApp {
         System.out.println("\n New Customer Registered Successfully!");
         System.out.println(" Your Customer ID is: " + customer.getId());
         System.out.println("------------------------------------------------\n");
+    }
+
+    private String inputUserName() {
+        System.out.print("Enter userName: ");
+        return scanner.nextLine();
     }
 
 
