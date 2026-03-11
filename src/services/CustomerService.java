@@ -1,19 +1,14 @@
 package services;
 
 import exceptions.EmptyCartException;
-import exceptions.EmptyMenuException;
 import exceptions.NoDeliveryPartnerAvailableException;
-import exceptions.NoOrdersFoundException;
 import models.*;
 import repos.DPRepo;
 import repos.DiscountRepo;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-import static models.OrderStatus.ASSIGNED;
 import static utils.Validate.validateInt;
 
 public class CustomerService {

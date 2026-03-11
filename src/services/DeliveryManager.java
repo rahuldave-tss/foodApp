@@ -1,5 +1,8 @@
-package models;
+package services;
 
+import models.DeliveryPartner;
+import models.Order;
+import models.OrderStatus;
 import repos.DPRepo;
 
 import java.util.List;
@@ -44,8 +47,6 @@ public class DeliveryManager {
             if (partner.isAvailable()) {
                 partner.setAvailable(false);
                 order.setDeliveryPartner(partner);
-                //observer for notification - partner
-                order.addObserver(partner);
                 dpRepo.getDeliveryPartnerOrders(partner).add(order);
 
                 order.setStatus(OrderStatus.ASSIGNED);
@@ -72,9 +73,9 @@ public class DeliveryManager {
             System.out.println("No active order to confirm for " + partner.getName());
             return;
         }
-        System.out.println("Your current order: ");
-        System.out.println(displayOrderHistoryHeader());
-        System.out.println(currentOrder.getDeliveryPartnerHistoryRow());
+//        System.out.println("Your current order: ");
+//        System.out.println(displayOrderHistoryHeader());
+//        System.out.println(currentOrder.getDeliveryPartnerHistoryRow());
 
         currentOrder.setStatus(OrderStatus.DELIVERED);
 

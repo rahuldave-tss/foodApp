@@ -25,7 +25,7 @@ public class FoodOrderApp {
 
     public FoodOrderApp() {
         this.dpRepo = new DPRepo();
-        this.userRepo = new UserRepo(dpRepo);
+        this.userRepo = new UserRepo();
         this.menuRepo = new MenuRepo();
         this.discountRepo=new DiscountRepo();
         this.customerRepo=new CustomerRepo();

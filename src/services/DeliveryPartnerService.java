@@ -2,13 +2,10 @@ package services;
 
 import models.*;
 import repos.DPRepo;
-import repos.UserRepo;
 
 import java.util.List;
-import java.util.Queue;
 
 import static utils.GlobalConstants.deliveryPartnerCommission;
-import static utils.Validate.*;
 
 public class DeliveryPartnerService {
     private DPRepo dpRepo;

@@ -1,11 +1,12 @@
 package services;
 
 import exceptions.EmptyMenuException;
-import exceptions.ItemAlreadyPresentException;
 import models.*;
 import repos.*;
 
 import java.util.List;
+
+import static utils.Validate.validatePercentage;
 
 public class AdminService {
 
@@ -65,12 +66,13 @@ public class AdminService {
                 .removeIf(d -> d.getDiscountId() == discountId);
     }
 
-    public void updateDiscount(int id, double newPercentage) {
+    public void updateDiscount(int id) {
         DiscountStrategy discount= discountRepo.findById(id);
         if(discount==null){
             System.out.println("No such discount available !!");
             return;
         }
+        double newPercentage=validatePercentage();
         discount.setDiscountPercentage(newPercentage);
         System.out.println("\nDiscount updated successfully !!");
     }

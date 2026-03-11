@@ -13,11 +13,9 @@ import static utils.GlobalConstants.*;
 public class UserRepo {
     //id -> user
     Map<Integer,User> userList;
-    DPRepo dpRepo;
 
-    public UserRepo(DPRepo dpRepo) {
+    public UserRepo() {
         this.userList = new HashMap<>();
-        this.dpRepo=dpRepo;
         init();
     }
 

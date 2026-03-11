@@ -230,9 +230,7 @@ public class AdminController {
                 System.out.print("Enter Discount ID to update: ");
                 int discountId = validateInt();
 
-                double newPercentage = validatePercentage();
-
-                adminService.updateDiscount(discountId, newPercentage);
+                adminService.updateDiscount(discountId);
                 break;
             }
 
